@@ -115,6 +115,7 @@ fun NetWatchApp(
                     onExportFormatted = viewModel::exportFormattedReport,
                     onExportCsv = viewModel::exportCsv,
                     onExportJson = viewModel::exportJson,
+                    onExportPdf = viewModel::exportPdf,
                     exportStatus = exportStatus,
                 )
 

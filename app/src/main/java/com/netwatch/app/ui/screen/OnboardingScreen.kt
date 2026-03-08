@@ -60,6 +60,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.netwatch.app.R
 import com.netwatch.app.ui.theme.NetWatchAccent
 import com.netwatch.app.ui.theme.NetWatchBackground
+import com.netwatch.app.ui.theme.NetWatchDanger
 import com.netwatch.app.ui.theme.NetWatchPrimaryText
 import com.netwatch.app.ui.theme.NetWatchSecondaryText
 import com.netwatch.app.ui.theme.NetWatchSurface
@@ -68,17 +69,20 @@ import com.netwatch.app.ui.theme.NetWatchSurface
 fun OnboardingScreen(
     onGrantAccess: () -> Unit,
     onSkip: () -> Unit,
+    permissionStateOverride: OnboardingPermissionState? = null
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var permissions by remember { mutableStateOf(readPermissionState(context)) }
+    var permissions by remember { mutableStateOf(permissionStateOverride ?: readPermissionState(context)) }
     var showSkipWarning by remember { mutableStateOf(false) }
     var showUsageAccessHint by remember { mutableStateOf(false) }
     var showBackgroundLocationHint by remember { mutableStateOf(false) }
 
     fun refreshState() {
-        permissions = readPermissionState(context)
+        if (permissionStateOverride == null) {
+            permissions = readPermissionState(context)
+        }
     }
 
     val singlePermissionLauncher = rememberLauncherForActivityResult(
@@ -276,6 +280,22 @@ fun OnboardingScreen(
             )
         }
 
+        if (!permissions.allRequiredGranted) {
+            val missing = permissions.missingRequirements()
+            if (missing.isNotEmpty()) {
+                Text(
+                    text = "Action Required: Please grant ${missing.joinToString(", ")} to proceed.",
+                    color = NetWatchDanger,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+
         Button(
             onClick = onGrantAccess,
             enabled = permissions.allRequiredGranted,
@@ -398,12 +418,12 @@ private fun PermissionItem(
     }
 }
 
-private data class OnboardingPermissionState(
-    val fineLocationGranted: Boolean,
-    val backgroundLocationGranted: Boolean,
-    val phoneStateGranted: Boolean,
-    val notificationsGranted: Boolean,
-    val usageAccessGranted: Boolean,
+data class OnboardingPermissionState(
+    val fineLocationGranted: Boolean = false,
+    val backgroundLocationGranted: Boolean = false,
+    val phoneStateGranted: Boolean = false,
+    val notificationsGranted: Boolean = false,
+    val usageAccessGranted: Boolean = false,
 ) {
     val allRequiredGranted: Boolean
         get() = fineLocationGranted &&

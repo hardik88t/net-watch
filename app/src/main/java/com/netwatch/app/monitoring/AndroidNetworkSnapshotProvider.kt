@@ -95,14 +95,32 @@ class AndroidNetworkSnapshotProvider(
         )
     }
 
-    private fun cellularProfile(): NetworkProfile {
-        val subscriptionId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            SubscriptionManager.getActiveDataSubscriptionId().takeIf { it != SubscriptionManager.INVALID_SUBSCRIPTION_ID }
-        } else {
-            null
+    private fun getActiveDataSubId(): Int? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val id = SubscriptionManager.getActiveDataSubscriptionId()
+            if (id != SubscriptionManager.INVALID_SUBSCRIPTION_ID) return id
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val id = SubscriptionManager.getDefaultDataSubscriptionId()
+            if (id != SubscriptionManager.INVALID_SUBSCRIPTION_ID) return id
+        }
+        return null
+    }
 
-        val carrier = runCatching { telephonyManager.networkOperatorName }.getOrNull().orEmpty()
+    private fun getActiveTelephonyManager(): TelephonyManager {
+        val subId = getActiveDataSubId()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && subId != null) {
+            telephonyManager.createForSubscriptionId(subId)
+        } else {
+            telephonyManager
+        }
+    }
+
+    private fun cellularProfile(): NetworkProfile {
+        val subscriptionId = getActiveDataSubId()
+
+        val activeTm = getActiveTelephonyManager()
+        val carrier = runCatching { activeTm.networkOperatorName }.getOrNull().orEmpty()
         val key = subscriptionId?.let { "sim:$it" } ?: "sim:${carrier.ifBlank { "unknown" }}"
 
         return NetworkProfile(
@@ -115,13 +133,15 @@ class AndroidNetworkSnapshotProvider(
     }
 
     private fun emergencyOnly(): Boolean {
+        val activeTm = getActiveTelephonyManager()
         return runCatching {
-            telephonyManager.serviceState?.state == ServiceState.STATE_EMERGENCY_ONLY
+            activeTm.serviceState?.state == ServiceState.STATE_EMERGENCY_ONLY
         }.getOrDefault(false)
     }
 
     private fun mapTelephonyType(): NetworkTechnology {
-        val type = runCatching { telephonyManager.dataNetworkType }.getOrDefault(TelephonyManager.NETWORK_TYPE_UNKNOWN)
+        val activeTm = getActiveTelephonyManager()
+        val type = runCatching { activeTm.dataNetworkType }.getOrDefault(TelephonyManager.NETWORK_TYPE_UNKNOWN)
         return when (type) {
             TelephonyManager.NETWORK_TYPE_NR -> NetworkTechnology.NETWORK_5G
             TelephonyManager.NETWORK_TYPE_LTE,
@@ -156,8 +176,9 @@ class AndroidNetworkSnapshotProvider(
         if (!hasPermission(Manifest.permission.READ_PHONE_STATE)) {
             return null
         }
+        val activeTm = getActiveTelephonyManager()
         return runCatching {
-            telephonyManager.signalStrength
+            activeTm.signalStrength
                 ?.cellSignalStrengths
                 ?.firstOrNull()
                 ?.dbm

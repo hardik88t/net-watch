@@ -52,6 +52,7 @@ fun StatsReportsScreen(
     onExportFormatted: () -> Unit,
     onExportCsv: () -> Unit,
     onExportJson: () -> Unit,
+    onExportPdf: () -> Unit,
     exportStatus: String?,
 ) {
     val tabs = listOf("Daily", "Weekly", "Monthly")
@@ -144,6 +145,21 @@ fun StatsReportsScreen(
         ) {
             Icon(Icons.Rounded.Download, contentDescription = null)
             Text("  Export Weekly Report (Formatted)", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+
+        Button(
+            onClick = onExportPdf,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = NetWatchSurface,
+                contentColor = NetWatchAccent,
+            ),
+        ) {
+            Icon(Icons.Rounded.Download, contentDescription = null)
+            Text("  Export Regional PDF Report", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

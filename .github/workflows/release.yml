@@ -55,11 +55,19 @@ jobs:
             -PNETWATCH_VERSION_NAME=${{ steps.version.outputs.name }} \
             -PNETWATCH_VERSION_CODE=${{ steps.version.outputs.code }}
 
-      - name: Build release APK (unsigned)
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 --decode > $RUNNER_TEMP/keystore.jks
+
+      - name: Build release APK
         run: |
           ./gradlew assembleRelease \
             -PNETWATCH_VERSION_NAME=${{ steps.version.outputs.name }} \
-            -PNETWATCH_VERSION_CODE=${{ steps.version.outputs.code }}
+            -PNETWATCH_VERSION_CODE=${{ steps.version.outputs.code }} \
+            -Pandroid.injected.signing.store.file=$RUNNER_TEMP/keystore.jks \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v2
@@ -68,4 +76,4 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.name, 'beta') }}
           files: |
             app/build/outputs/apk/debug/app-debug.apk
-            app/build/outputs/apk/release/app-release-unsigned.apk
+            app/build/outputs/apk/release/app-release.apk

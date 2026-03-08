@@ -28,7 +28,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
                 }
                 val constraints = app.appContainer.preferencesRepository.constraints.first()
                 if (constraints.autoResumeOnBoot && constraints.monitoringEnabled) {
-                    ContextCompat.startForegroundService(context, NetWatchMonitorService.startIntent(context))
+                    runCatching {
+                        ContextCompat.startForegroundService(context, NetWatchMonitorService.startIntent(context))
+                    }
                 }
             } finally {
                 pendingResult.finish()

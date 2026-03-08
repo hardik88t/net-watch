@@ -8,12 +8,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.SignalCellularAlt
+import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -126,15 +135,27 @@ fun TimelineScreen(
         }
 
         if (filteredItems.isEmpty()) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Icon(
+                    Icons.Rounded.Timeline, 
+                    contentDescription = null, 
+                    modifier = Modifier.padding(bottom = 16.dp).size(64.dp),
+                    tint = NetWatchSecondaryText.copy(alpha = 0.5f)
+                )
                 Text(
-                    text = "No logs yet. Enable monitoring or run a manual test.",
-                    modifier = Modifier.padding(16.dp),
+                    text = "No logs yet.",
+                    color = NetWatchPrimaryText,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Text(
+                    text = "Enable monitoring or run a manual test.",
                     color = NetWatchSecondaryText,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
         } else {
@@ -182,6 +203,12 @@ private fun TimelineItemCard(
         else -> NetWatchSecondaryText
     }
 
+    val typeIcon = when (event.type) {
+        NetworkEventType.OUTAGE_START, NetworkEventType.OUTAGE_END -> Icons.Rounded.ErrorOutline
+        NetworkEventType.ANOMALY -> Icons.Rounded.Warning
+        else -> Icons.Rounded.Info
+    }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
         shape = RoundedCornerShape(12.dp),
@@ -196,11 +223,15 @@ private fun TimelineItemCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = event.type.name.replace('_', ' '),
-                    color = statusColor,
-                    fontWeight = FontWeight.Bold,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(typeIcon, contentDescription = null, tint = statusColor, modifier = Modifier.size(16.dp))
+                    Text(
+                        text = " " + event.type.name.replace('_', ' '),
+                        color = statusColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
+                }
                 Text(
                     text = formatter.format(Date(event.timestampMs)),
                     color = NetWatchSecondaryText,
@@ -208,38 +239,66 @@ private fun TimelineItemCard(
                 )
             }
 
-            Text(
-                text = event.message,
-                color = NetWatchPrimaryText,
-                fontSize = if (compactMode) 15.sp else 17.sp,
-                lineHeight = if (compactMode) 20.sp else 24.sp,
-            )
-            Text(
-                text = buildString {
-                    append(event.profileKey ?: "unknown profile")
-                    event.signalDbm?.let { append("  |  $it dBm") }
-                    if (event.latitude != null && event.longitude != null) {
-                        append("  |  ${"%.5f".format(event.latitude)}, ${"%.5f".format(event.longitude)}")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top,
+            ) {
+                Text(
+                    text = event.message,
+                    color = NetWatchPrimaryText,
+                    fontSize = if (compactMode) 15.sp else 17.sp,
+                    lineHeight = if (compactMode) 20.sp else 24.sp,
+                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                )
+
+                androidx.compose.material3.IconButton(
+                    onClick = onAddNote,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(Icons.Rounded.Edit, contentDescription = "Annotate", tint = NetWatchSecondaryText, modifier = Modifier.size(16.dp))
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                event.signalDbm?.let {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Rounded.SignalCellularAlt, contentDescription = null, tint = NetWatchSecondaryText, modifier = Modifier.size(12.dp))
+                        Text(" $it dBm", color = NetWatchSecondaryText, fontSize = 12.sp)
                     }
-                    event.durationMs?.let { append("  |  ${it / 1000}s") }
-                },
-                color = NetWatchSecondaryText,
-                fontSize = 12.sp,
-            )
+                }
+                if (event.latitude != null && event.longitude != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Rounded.Place, contentDescription = null, tint = NetWatchSecondaryText, modifier = Modifier.size(12.dp))
+                        Text(" ${"%.5f".format(event.latitude)}, ${"%.5f".format(event.longitude)}", color = NetWatchSecondaryText, fontSize = 12.sp)
+                    }
+                }
+                event.durationMs?.let {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Rounded.Schedule, contentDescription = null, tint = NetWatchSecondaryText, modifier = Modifier.size(12.dp))
+                        Text(" ${it / 1000}s", color = NetWatchSecondaryText, fontSize = 12.sp)
+                    }
+                }
+            }
 
             item.note?.let { note ->
-                Text(
-                    text = "Note: $note",
-                    color = NetWatchAccent,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(NetWatchAccent.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
                         .padding(if (compactMode) 6.dp else 8.dp),
-                )
-            }
-
-            TextButton(onClick = onAddNote) {
-                Text("Add Manual Annotation")
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Rounded.Edit, contentDescription = null, tint = NetWatchAccent, modifier = Modifier.size(14.dp))
+                    Text(
+                        text = "  ${note}",
+                        color = NetWatchAccent,
+                        fontSize = 13.sp
+                    )
+                }
             }
         }
     }

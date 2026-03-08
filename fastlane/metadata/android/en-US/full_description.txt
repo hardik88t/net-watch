@@ -1,0 +1,13 @@
+NetWatch is a privacy-first Android diagnostics app that records network transitions, outages, anomalies, and on-demand speed tests with timestamped context.
+
+The app uses local Room databases to store comprehensive historical telemetry, giving you indisputable proof of cellular dead zones and regional networking stability.
+
+Highlights:
+- Lightweight passive background monitoring
+- Fast on-demand heavy diagnostics (download/upload speed tests)
+- Historical timeline log mapping exact signal drops with lat/lng geolocation coordinates
+- Export daily/weekly stats locally or generate custom PDF reports
+- Dual-SIM support (reads active data-routing SIM characteristics)
+- OpenStreetMap-based coverage map with optional offline tile caching
+
+NetWatch requires absolutely zero network permissions to report to arbitrary servers. All analytics are stored entirely on-device and can only be extracted via manual exports by the user.

@@ -30,7 +30,45 @@ class RoomMonitoringRepository(
     private val profileDao: NetworkProfileDao,
 ) : MonitoringRepository {
 
+    private var lastSnapshotMs = 0L
+    private var lastEventMs = 0L
+    private var lastSpeedTestMs = 0L
+
+    private fun validateTimestamp(
+        timestampMs: Long,
+        lastSeenMs: Long,
+        updateLastSeen: (Long) -> Unit
+    ): Boolean {
+        // Prevent strictly backwards-in-time anomalous inserts for the same session.
+        if (timestampMs <= 0) return false
+        if (timestampMs < lastSeenMs) return false
+
+        // Prevent absurd futuristic timestamps (more than 1 day from now)
+        val now = System.currentTimeMillis()
+        if (timestampMs > now + 86400000L) return false
+
+        updateLastSeen(timestampMs)
+        return true
+    }
+
+    private fun validateLatLng(lat: Double?, lng: Double?): Boolean {
+        if (lat == null && lng == null) return true // It's fine to not have location
+        if (lat == null || lng == null) return false // But not half a location!
+        return lat in -90.0..90.0 && lng in -180.0..180.0
+    }
+
+    private fun validateSignal(dbm: Int?): Boolean {
+        if (dbm == null) return true
+        // Allow anything from -150 to 0. Anything else is garbage/impossible.
+        return dbm in -150..0
+    }
+
     override suspend fun logSnapshot(snapshot: ConnectionSnapshot) {
+        if (snapshot.profile.key.isBlank()) return
+        if (!validateTimestamp(snapshot.timestampMs, lastSnapshotMs) { lastSnapshotMs = it }) return
+        if (!validateLatLng(snapshot.latitude, snapshot.longitude)) return
+        if (!validateSignal(snapshot.signalDbm)) return
+
         snapshotDao.insert(
             StateSnapshotEntity(
                 timestampMs = snapshot.timestampMs,
@@ -51,6 +89,11 @@ class RoomMonitoringRepository(
     }
 
     override suspend fun logEvent(event: NetworkEvent): Long {
+        if (event.profileKey.isNullOrBlank()) return -1L
+        if (!validateTimestamp(event.timestampMs, lastEventMs) { lastEventMs = it }) return -1L
+        if (!validateLatLng(event.latitude, event.longitude)) return -1L
+        if (!validateSignal(event.signalDbm)) return -1L
+
         return eventDao.insert(
             NetworkEventEntity(
                 timestampMs = event.timestampMs,
@@ -68,6 +111,10 @@ class RoomMonitoringRepository(
     }
 
     override suspend fun logSpeedTest(result: SpeedTestResult) {
+        if (result.profileKey.isNullOrBlank()) return
+        if (!validateTimestamp(result.timestampMs, lastSpeedTestMs) { lastSpeedTestMs = it }) return
+        if (!validateLatLng(result.latitude, result.longitude)) return
+
         speedTestDao.insert(
             SpeedTestResultEntity(
                 timestampMs = result.timestampMs,
@@ -87,6 +134,8 @@ class RoomMonitoringRepository(
     }
 
     override suspend fun upsertProfile(profile: NetworkProfile, seenAtMs: Long) {
+        if (profile.key.isBlank()) return
+
         profileDao.upsert(
             NetworkProfileEntity(
                 key = profile.key,
@@ -142,9 +191,9 @@ class RoomMonitoringRepository(
         val since = nowMs - weekMs
 
         val snapshots = snapshotDao.getSince(since)
-        var timeOn5g = 0L
-        var timeOnLte = 0L
-        var timeOnLegacy = 0L
+        var timeOn5gMs = 0L
+        var timeOnLteMs = 0L
+        var timeOnLegacyMs = 0L
         var switches = 0
 
         val avgDownload = speedTestDao.averageDownloadSince(since)
@@ -154,11 +203,11 @@ class RoomMonitoringRepository(
         if (snapshots.isNotEmpty()) {
             snapshots.forEachIndexed { index, snapshot ->
                 val nextTimestamp = snapshots.getOrNull(index + 1)?.timestampMs ?: nowMs
-                val durationMinutes = ((nextTimestamp - snapshot.timestampMs).coerceAtLeast(0) / 60_000)
+                val durationMs = (nextTimestamp - snapshot.timestampMs).coerceAtLeast(0)
                 when (snapshot.technology) {
-                    NetworkTechnology.NETWORK_5G -> timeOn5g += durationMinutes
-                    NetworkTechnology.LTE -> timeOnLte += durationMinutes
-                    NetworkTechnology.NETWORK_2G, NetworkTechnology.NETWORK_3G -> timeOnLegacy += durationMinutes
+                    NetworkTechnology.NETWORK_5G -> timeOn5gMs += durationMs
+                    NetworkTechnology.LTE -> timeOnLteMs += durationMs
+                    NetworkTechnology.NETWORK_2G, NetworkTechnology.NETWORK_3G -> timeOnLegacyMs += durationMs
                     else -> Unit
                 }
 
@@ -173,9 +222,9 @@ class RoomMonitoringRepository(
             avgDownloadMbps = avgDownload,
             avgUploadMbps = avgUpload,
             avgLatencyMs = avgLatency,
-            timeOn5gMinutes = timeOn5g,
-            timeOnLteMinutes = timeOnLte,
-            timeOnLegacyMinutes = timeOnLegacy,
+            timeOn5gMinutes = timeOn5gMs / 60_000,
+            timeOnLteMinutes = timeOnLteMs / 60_000,
+            timeOnLegacyMinutes = timeOnLegacyMs / 60_000,
             switchFrequencyPerDay = switches / 7.0,
         )
     }

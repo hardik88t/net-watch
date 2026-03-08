@@ -1,12 +1,13 @@
 Categories:
   - Connectivity
   - Internet
-License: GPL-3.0-or-later
+License: GPL-3.0-only
 AuthorName: NetWatch Contributors
 AuthorEmail: maintainers@netwatch.app
 WebSite: https://github.com/hardik88t/net-watch
 SourceCode: https://github.com/hardik88t/net-watch
 IssueTracker: https://github.com/hardik88t/net-watch/issues
+Funding: https://github.com/sponsors/hardik88t
 
 Summary: Open-source network diagnostics and coverage logging
 Description: |
@@ -20,7 +21,7 @@ Description: |
   - OpenStreetMap-based coverage map with optional offline tile caching
 
 RepoType: git
-Repo: https://github.com/hardik88t/net-watch.git
+Repo: https://github.com/hardik88t/net-watch
 
 Builds:
   - versionName: 0.2.0-beta.1
@@ -29,3 +30,6 @@ Builds:
     gradle:
       - yes
     output: app/build/outputs/apk/release/app-release-unsigned.apk
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags

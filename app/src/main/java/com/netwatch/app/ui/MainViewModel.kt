@@ -236,6 +236,14 @@ class MainViewModel(
         }
     }
 
+    fun exportPdf() {
+        viewModelScope.launch {
+            runCatching { reportExporter.exportPdfReport() }
+                .onSuccess { file -> _exportStatus.value = "PDF export: ${file.absolutePath}" }
+                .onFailure { error -> _exportStatus.value = "Export failed: ${error.message}" }
+        }
+    }
+
     private fun refreshStatsLoop() {
         viewModelScope.launch {
             while (true) {
