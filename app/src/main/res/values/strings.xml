@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NetWatch</string>
+    <string name="monitoring_notification_title">NetWatch monitoring active</string>
+    <string name="monitoring_notification_text">Logging transitions, anomalies, and diagnostics</string>
+</resources>

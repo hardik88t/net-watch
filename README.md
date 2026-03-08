@@ -10,6 +10,46 @@ Tracks every change in your network along with real internet speed and signal da
 - The app should be developed in Kotlin and follow the latest Android development practices.
 - The app should be developed in a way that it can be easily maintained and updated.
 
+## Current Kotlin/Android Implementation
+
+- Full Android app scaffold created using Kotlin + Jetpack Compose + Room + DataStore + WorkManager.
+- Figma-inspired screens implemented:
+  - Transparent onboarding
+  - Live monitoring dashboard
+  - Timeline with manual event annotations
+  - Stats & reports view with exports
+  - Monitoring preferences + trigger controls
+- Foreground monitoring service implemented with boot resilience:
+  - Periodic snapshot logging
+  - Lightweight connectivity probing
+  - Transition and outage event detection
+  - Dead-air anomaly detection
+  - Triggered/manual heavy test execution
+- Local storage implemented with structured tables:
+  - State snapshots
+  - Network events
+  - Speed test results
+  - Profile records (SIM/Wi-Fi)
+  - Annotations
+- Export support implemented:
+  - Formatted text report
+  - Raw CSV
+  - Raw JSON
+- Unit tests added for critical monitoring logic:
+  - Transition + outage detection
+  - Dead-air anomaly detection
+  - Heavy-test trigger decisioning
+
+## Build Requirements
+
+- JDK 17 is required for Android Gradle Plugin 8.5.2.
+- Use:
+
+```bash
+./gradlew test
+./gradlew assembleDebug
+```
+
 
 ## Starting Folder Structure 
 
