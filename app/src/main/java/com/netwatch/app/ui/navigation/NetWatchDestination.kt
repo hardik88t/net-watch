@@ -5,6 +5,7 @@ enum class NetWatchDestination(
     val label: String,
 ) {
     DASHBOARD("dashboard", "Dashboard"),
+    MAP("map", "Map"),
     TIMELINE("timeline", "Timeline"),
     STATS("stats", "Stats"),
     SETTINGS("settings", "Settings"),

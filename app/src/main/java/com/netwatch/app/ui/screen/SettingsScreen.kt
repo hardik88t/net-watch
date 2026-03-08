@@ -1,5 +1,6 @@
 package com.netwatch.app.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,9 +8,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.SettingsSuggest
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Slider
@@ -18,10 +26,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.netwatch.app.R
 import com.netwatch.app.core.model.MonitoringConstraints
+import com.netwatch.app.ui.theme.NetWatchAccent
 import com.netwatch.app.ui.theme.NetWatchBackground
 import com.netwatch.app.ui.theme.NetWatchPrimaryText
 import com.netwatch.app.ui.theme.NetWatchSecondaryText
@@ -49,30 +60,45 @@ fun SettingsScreen(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(
-            text = "Monitoring Preferences",
-            color = NetWatchPrimaryText,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.netwatch_logo),
+                contentDescription = "NetWatch logo",
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(end = 8.dp),
+            )
+            Text(
+                text = "Monitoring Preferences",
+                color = NetWatchPrimaryText,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
         Text(
             text = "Define strict budgets, trigger rules, and automation behavior.",
             color = NetWatchSecondaryText,
             fontSize = 14.sp,
         )
 
+        SectionTitle("Runtime Controls")
+
         ToggleCard(
             title = "Monitoring Enabled",
             description = "Pause or resume passive tracking and anomaly checks",
             checked = constraints.monitoringEnabled,
             onCheckedChange = onMonitoringToggle,
+            icon = Icons.Rounded.SettingsSuggest,
         )
         ToggleCard(
             title = "Auto Resume On Boot",
             description = "Restore configured monitoring state after reboot",
             checked = constraints.autoResumeOnBoot,
             onCheckedChange = onAutoResumeToggle,
+            icon = Icons.Rounded.Schedule,
         )
+
+        SectionTitle("Data Budgets")
 
         SliderCard(
             label = "Daily heavy-test budget",
@@ -81,6 +107,7 @@ fun SettingsScreen(
             steps = 14,
             valueSuffix = "MB",
             onValueChange = { onDailyBudgetChange(it.toInt()) },
+            icon = Icons.Rounded.DataUsage,
         )
 
         SliderCard(
@@ -90,7 +117,10 @@ fun SettingsScreen(
             steps = 16,
             valueSuffix = "MB",
             onValueChange = { onMonthlyBudgetChange(it.toInt()) },
+            icon = Icons.Rounded.DataUsage,
         )
+
+        SectionTitle("Test Scheduling")
 
         SliderCard(
             label = "Max heavy-test duration",
@@ -99,6 +129,7 @@ fun SettingsScreen(
             steps = 22,
             valueSuffix = "sec",
             onValueChange = { onMaxDurationChange(it.toInt()) },
+            icon = Icons.Rounded.Schedule,
         )
 
         SliderCard(
@@ -108,13 +139,17 @@ fun SettingsScreen(
             steps = 18,
             valueSuffix = "sec",
             onValueChange = { onCheckIntervalChange(it.toInt()) },
+            icon = Icons.Rounded.Schedule,
         )
+
+        SectionTitle("Trigger Rules")
 
         ToggleCard(
             title = "Trigger on signal drop",
             description = "Start heavy test when dBm suddenly degrades",
             checked = constraints.triggerOnSignalDrop,
             onCheckedChange = onSignalDropToggle,
+            icon = Icons.Rounded.Bolt,
         )
 
         SliderCard(
@@ -124,6 +159,7 @@ fun SettingsScreen(
             steps = 6,
             valueSuffix = "dBm",
             onValueChange = { onSignalDropThresholdChange(it.toInt()) },
+            icon = Icons.Rounded.Bolt,
         )
 
         ToggleCard(
@@ -131,6 +167,7 @@ fun SettingsScreen(
             description = "Run heavy diagnostics when network technology rank drops",
             checked = constraints.triggerOnTechDowngrade,
             onCheckedChange = onTechDowngradeToggle,
+            icon = Icons.Rounded.Bolt,
         )
 
         ToggleCard(
@@ -138,8 +175,20 @@ fun SettingsScreen(
             description = "Run heavy diagnostics when probe fails despite strong signal",
             checked = constraints.triggerOnDeadAir,
             onCheckedChange = onDeadAirToggle,
+            icon = Icons.Rounded.Bolt,
         )
     }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        color = NetWatchAccent,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        letterSpacing = 1.sp,
+    )
 }
 
 @Composable
@@ -148,6 +197,7 @@ private fun ToggleCard(
     description: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Card(colors = CardDefaults.cardColors(containerColor = NetWatchSurface), shape = RoundedCornerShape(12.dp)) {
         Row(
@@ -156,6 +206,12 @@ private fun ToggleCard(
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = NetWatchAccent,
+                modifier = Modifier.padding(end = 10.dp),
+            )
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, color = NetWatchPrimaryText, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                 Text(description, color = NetWatchSecondaryText, fontSize = 13.sp)
@@ -173,10 +229,14 @@ private fun SliderCard(
     steps: Int,
     valueSuffix: String,
     onValueChange: (Float) -> Unit,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Card(colors = CardDefaults.cardColors(containerColor = NetWatchSurface), shape = RoundedCornerShape(12.dp)) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(label, color = NetWatchPrimaryText, fontWeight = FontWeight.SemiBold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = icon, contentDescription = null, tint = NetWatchAccent, modifier = Modifier.padding(end = 8.dp))
+                Text(label, color = NetWatchPrimaryText, fontWeight = FontWeight.SemiBold)
+            }
             Text("${value.toInt()} $valueSuffix", color = NetWatchSecondaryText)
             Slider(
                 value = value,

@@ -1,6 +1,7 @@
 package com.netwatch.app.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,6 +51,18 @@ fun TimelineScreen(
     onAddNote: (Long?, String) -> Unit,
 ) {
     var noteDialogItem by remember { mutableStateOf<TimelineItem?>(null) }
+    var selectedFilter by remember { mutableStateOf(TimelineFilter.ALL) }
+
+    val filteredItems = remember(items, selectedFilter) {
+        items.filter { timelineItem ->
+            when (selectedFilter) {
+                TimelineFilter.ALL -> true
+                TimelineFilter.OUTAGES -> timelineItem.event.type == NetworkEventType.OUTAGE_START || timelineItem.event.type == NetworkEventType.OUTAGE_END
+                TimelineFilter.SPEED_TESTS -> timelineItem.event.type == NetworkEventType.SPEED_TEST
+                TimelineFilter.ANOMALIES -> timelineItem.event.type == NetworkEventType.ANOMALY
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -65,7 +82,49 @@ fun TimelineScreen(
             color = NetWatchSecondaryText,
         )
 
-        if (items.isEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "${filteredItems.size} events",
+                color = NetWatchAccent,
+                fontWeight = FontWeight.Bold,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.Tune, contentDescription = null, tint = NetWatchSecondaryText)
+                Text(
+                    text = "Filters",
+                    color = NetWatchSecondaryText,
+                    modifier = Modifier.padding(start = 4.dp),
+                    fontSize = 12.sp,
+                )
+            }
+        }
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(TimelineFilter.entries) { filter ->
+                val selected = filter == selectedFilter
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (selected) NetWatchAccent.copy(alpha = 0.2f) else NetWatchSurface
+                    ),
+                    shape = RoundedCornerShape(100.dp),
+                    modifier = Modifier.clickable { selectedFilter = filter },
+                ) {
+                    Text(
+                        text = filter.label,
+                        color = if (selected) NetWatchAccent else NetWatchSecondaryText,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+
+        if (filteredItems.isEmpty()) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
                 shape = RoundedCornerShape(12.dp),
@@ -79,7 +138,7 @@ fun TimelineScreen(
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(items, key = { it.event.id }) { item ->
+                items(filteredItems, key = { it.event.id }) { item ->
                     TimelineItemCard(item = item, onAddNote = { noteDialogItem = item })
                 }
             }
@@ -108,7 +167,7 @@ private fun TimelineItemCard(
         NetworkEventType.OUTAGE_START -> NetWatchDanger
         NetworkEventType.OUTAGE_END -> NetWatchAccent
         NetworkEventType.ANOMALY -> Color(0xFFFBBF24)
-        NetworkEventType.SPEED_TEST -> Color(0xFFA78BFA)
+        NetworkEventType.SPEED_TEST -> Color(0xFF22D3EE)
         else -> NetWatchSecondaryText
     }
 
@@ -213,4 +272,13 @@ private fun NoteDialog(
             }
         },
     )
+}
+
+private enum class TimelineFilter(
+    val label: String,
+) {
+    ALL("All"),
+    OUTAGES("Outages"),
+    SPEED_TESTS("Tests"),
+    ANOMALIES("Anomalies"),
 }

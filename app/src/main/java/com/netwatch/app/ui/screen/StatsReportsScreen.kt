@@ -1,5 +1,6 @@
 package com.netwatch.app.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Button
@@ -30,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.netwatch.app.R
 import com.netwatch.app.core.model.WeeklyStats
 import com.netwatch.app.ui.theme.NetWatchAccent
 import com.netwatch.app.ui.theme.NetWatchBackground
@@ -60,12 +64,20 @@ fun StatsReportsScreen(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(
-            text = "Stats & Reports",
-            color = NetWatchPrimaryText,
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.netwatch_logo),
+                contentDescription = "NetWatch logo",
+                modifier = Modifier.size(30.dp),
+            )
+            Text(
+                text = "Stats & Reports",
+                color = NetWatchPrimaryText,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             tabs.forEachIndexed { index, tab ->
@@ -92,21 +104,23 @@ fun StatsReportsScreen(
             }
         }
 
+        HealthBanner(weeklyStats = weeklyStats)
+
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SummaryCard(
                 modifier = Modifier.weight(1f),
                 title = "Avg Download",
                 value = "${"%.1f".format(weeklyStats.avgDownloadMbps)} Mbps",
-                delta = "+12%",
-                deltaPositive = true,
+                delta = if (weeklyStats.avgDownloadMbps > 40.0) "Strong" else "Low",
+                deltaPositive = weeklyStats.avgDownloadMbps > 40.0,
                 icon = Icons.Rounded.Download,
             )
             SummaryCard(
                 modifier = Modifier.weight(1f),
                 title = "Avg Upload",
                 value = "${"%.1f".format(weeklyStats.avgUploadMbps)} Mbps",
-                delta = "-5%",
-                deltaPositive = false,
+                delta = if (weeklyStats.avgUploadMbps > 15.0) "Healthy" else "Bottleneck",
+                deltaPositive = weeklyStats.avgUploadMbps > 15.0,
                 icon = Icons.Rounded.Upload,
             )
         }
@@ -156,6 +170,46 @@ fun StatsReportsScreen(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
             )
+        }
+    }
+}
+
+@Composable
+private fun HealthBanner(weeklyStats: WeeklyStats) {
+    val score = (
+        (weeklyStats.avgDownloadMbps / 2.0) +
+            (weeklyStats.avgUploadMbps / 3.0) -
+            (weeklyStats.avgLatencyMs / 4.0)
+        ).toInt().coerceIn(0, 100)
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
+        shape = RoundedCornerShape(12.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("NETWORK HEALTH", color = NetWatchSecondaryText, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("$score/100", color = NetWatchPrimaryText, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    if (score >= 70) "Stable week" else "Needs attention",
+                    color = if (score >= 70) NetWatchAccent else NetWatchDanger,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(58.dp)
+                    .background(NetWatchAccent.copy(alpha = 0.16f), RoundedCornerShape(29.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Rounded.Insights, contentDescription = null, tint = NetWatchAccent, modifier = Modifier.size(30.dp))
+            }
         }
     }
 }

@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.NetworkCell
@@ -62,6 +64,7 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .background(NetWatchBackground)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -94,6 +97,8 @@ fun DashboardScreen(
                 Switch(checked = monitoringEnabled, onCheckedChange = onToggleMonitoring)
             }
         }
+
+        LiveSummaryCard(snapshot = snapshot, speedTests = speedTests)
 
         SignalGauge(signalDbm = latestSignal)
 
@@ -147,6 +152,43 @@ fun DashboardScreen(
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
             )
+        }
+    }
+}
+
+@Composable
+private fun LiveSummaryCard(
+    snapshot: ConnectionSnapshot?,
+    speedTests: List<SpeedTestResult>,
+) {
+    val latency = speedTests.firstOrNull()?.latencyMs ?: 0.0
+    val hasInternet = snapshot?.hasInternet == true
+    val profileName = snapshot?.profile?.displayName ?: "Unknown profile"
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
+        shape = RoundedCornerShape(14.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("ACTIVE PROFILE", color = NetWatchSecondaryText, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                Text(profileName, color = NetWatchPrimaryText, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(
+                    text = if (hasInternet) "Internet validated" else "Validation failing",
+                    color = if (hasInternet) NetWatchAccent else Color(0xFFF87171),
+                    fontSize = 12.sp,
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Latency", color = NetWatchSecondaryText, fontSize = 11.sp)
+                Text("${"%.1f".format(latency)} ms", color = NetWatchPrimaryText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            }
         }
     }
 }
