@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetWatch Live Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gauge-gradient {
+            background: conic-gradient(from 180deg at 50% 50%, #66ffdb 0deg, #1b2825 280deg);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between border-b border-slate-200 dark:border-primary/10">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">menu</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">NetWatch Live</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- Gauge Section -->
+<div class="flex flex-col items-center justify-center p-8">
+<div class="relative flex items-center justify-center w-64 h-64">
+<!-- Outer Track -->
+<div class="absolute inset-0 rounded-full border-[12px] border-slate-200 dark:border-primary/5"></div>
+<!-- Active Gauge -->
+<div class="absolute inset-0 rounded-full border-[12px] border-transparent border-t-primary border-r-primary rotate-[45deg]"></div>
+<div class="flex flex-col items-center">
+<span class="text-primary text-sm font-bold tracking-widest uppercase mb-1">Signal</span>
+<span class="text-slate-900 dark:text-slate-100 text-6xl font-black leading-none">-72</span>
+<span class="text-slate-500 dark:text-slate-400 text-lg font-medium">dBm</span>
+<div class="mt-4 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold uppercase tracking-tighter border border-primary/30">
+                            Excellent
+                        </div>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-4 px-4">
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 shadow-sm">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">cell_tower</span>
+<p class="text-xs font-semibold uppercase tracking-wider">Connection</p>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">5G - Verizon</p>
+<div class="flex items-center gap-1.5">
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+<p class="text-primary text-xs font-medium">Active</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 shadow-sm">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">speed</span>
+<p class="text-xs font-semibold uppercase tracking-wider">Latency</p>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">24 ms</p>
+<p class="text-rose-500 text-xs font-medium">-2ms vs avg</p>
+</div>
+</div>
+<!-- Sparkline Section -->
+<div class="px-4 py-6">
+<div class="rounded-xl p-5 bg-white dark:bg-primary/5 border border-slate-200 dark:border-primary/10 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Signal Stability</p>
+<p class="text-slate-900 dark:text-slate-100 text-xl font-bold">-74.2 dBm avg</p>
+</div>
+<div class="text-right">
+<p class="text-primary text-sm font-bold">+1.2%</p>
+<p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase">Last 10m</p>
+</div>
+</div>
+<div class="h-24 w-full">
+<svg fill="none" height="100%" preserveaspectratio="none" viewbox="0 0 400 100" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 80C20 80 30 20 50 20C70 20 80 40 100 40C120 40 130 90 150 90C170 90 180 30 200 30C220 30 230 70 250 70C270 70 280 50 300 50C320 50 330 95 350 95C370 95 380 10 400 10V100H0V80Z" fill="url(#sparkline-grad)"></path>
+<path d="M0 80C20 80 30 20 50 20C70 20 80 40 100 40C120 40 130 90 150 90C170 90 180 30 200 30C220 30 230 70 250 70C270 70 280 50 300 50C320 50 330 95 350 95C370 95 380 10 400 10" stroke="#66ffdb" stroke-linecap="round" stroke-width="2"></path>
+<defs>
+<lineargradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#66ffdb" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#66ffdb" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<div class="flex justify-between mt-2">
+<p class="text-slate-500 dark:text-slate-400 text-[10px] font-bold">10M AGO</p>
+<p class="text-slate-500 dark:text-slate-400 text-[10px] font-bold">5M AGO</p>
+<p class="text-primary text-[10px] font-bold">NOW</p>
+</div>
+</div>
+</div>
+<!-- Quick Action -->
+<div class="px-4 pb-4">
+<button class="w-full bg-primary text-background-dark font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">bolt</span>
+                    Quick Test Now
+                </button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-background-dark border-t border-slate-200 dark:border-primary/10 px-4 pb-6 pt-2 z-50">
+<div class="flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Timeline</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Stats</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>NetWatch Network Events</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10">
+<div class="flex items-center p-4 justify-between">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-3xl">analytics</span>
+</div>
+<h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 px-3">Network Events</h1>
+<div class="flex items-center gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary">search</span>
+</button>
+</div>
+</div>
+<div class="flex gap-3 px-4 pb-4 overflow-x-auto no-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5 text-background-dark text-sm font-semibold">
+                All
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/10 border border-primary/20 px-5 text-primary text-sm font-semibold">
+                Outages
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/10 border border-primary/20 px-5 text-primary text-sm font-semibold">
+                Tests
+            </button>
+</div>
+</header>
+<main class="flex-1 px-4 py-6">
+<div class="relative space-y-0">
+<div class="absolute left-[19px] top-4 bottom-4 w-[2px] bg-primary/10"></div>
+<div class="relative grid grid-cols-[40px_1fr] gap-x-4 mb-8">
+<div class="flex flex-col items-center pt-1">
+<div class="z-10 flex size-10 items-center justify-center rounded-full bg-primary/20 border-2 border-primary text-primary">
+<span class="material-symbols-outlined text-[20px]">signal_cellular_alt_1_bar</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col bg-primary/5 dark:bg-slate-800/40 p-4 rounded-xl border border-primary/10">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">5G to LTE switch</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-0.5">10:45 AM • Downtown Metro</p>
+</div>
+<button class="flex items-center justify-center rounded-lg h-8 px-3 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors">
+                            Add Note
+                        </button>
+</div>
+<div class="w-full h-32 rounded-lg bg-slate-800 relative overflow-hidden mt-2 border border-primary/5">
+<img class="w-full h-full object-cover opacity-60" data-alt="Satellite view map of downtown metro area" data-location="Downtown Metro" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFV7RyuPDpg1WIHa2ZQPZovRmsohDL6iJVR4ds9f9jnCo6Nl79oG_gAalV6CwvydSX6Io4ot9Xr4trsFhHJdj3e0qfPaR3ebsTdOZh7GRtmy1gnSr8xJgTDs3rG3ZC-AWBBPcpiaAKkRxjWEtXu1UElaQWuymGlj6RXEK3S3bFwaPkbicG9WtivZU6lFhgxZQ5hb5p5sJbwTVW9eV1qkGS4fvV_XTp_dNMeuqujCVj79nDC3JrtDfznjB3MWE03xZelti7fuVFaDiY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+</div>
+</div>
+</div>
+<div class="relative grid grid-cols-[40px_1fr] gap-x-4 mb-8">
+<div class="flex flex-col items-center pt-1">
+<div class="z-10 flex size-10 items-center justify-center rounded-full bg-red-500/20 border-2 border-red-500 text-red-500">
+<span class="material-symbols-outlined text-[20px]">error</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+<div class="flex justify-between items-start mb-1">
+<div>
+<p class="text-red-500 text-base font-bold uppercase tracking-wider">Absolute Zero</p>
+<p class="text-red-400/80 text-sm mt-0.5">Total Network Outage</p>
+</div>
+<button class="flex items-center justify-center rounded-lg h-8 px-3 bg-red-500 text-white text-xs font-semibold">
+                            Critical
+                        </button>
+</div>
+<div class="flex items-center gap-4 mt-3 pt-3 border-t border-red-500/10">
+<div class="flex flex-col">
+<p class="text-xs text-red-400/60 uppercase font-bold">Duration</p>
+<p class="text-slate-100 font-medium">15m 24s</p>
+</div>
+<div class="flex flex-col">
+<p class="text-xs text-red-400/60 uppercase font-bold">Time</p>
+<p class="text-slate-100 font-medium">12:20 PM</p>
+</div>
+</div>
+<button class="mt-4 w-full py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors">
+                        ADD INCIDENT NOTE
+                    </button>
+</div>
+</div>
+<div class="relative grid grid-cols-[40px_1fr] gap-x-4 mb-8">
+<div class="flex flex-col items-center pt-1">
+<div class="z-10 flex size-10 items-center justify-center rounded-full bg-primary/20 border-2 border-primary text-primary">
+<span class="material-symbols-outlined text-[20px]">wifi</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col bg-primary/5 dark:bg-slate-800/40 p-4 rounded-xl border border-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">Wi-Fi Connected</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-0.5">01:05 PM • <span class="text-primary font-medium">SSID: Office_Guest</span></p>
+</div>
+<button class="flex items-center justify-center rounded-lg h-8 px-3 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors">
+                            Add Note
+                        </button>
+</div>
+</div>
+</div>
+<div class="relative grid grid-cols-[40px_1fr] gap-x-4">
+<div class="flex flex-col items-center pt-1">
+<div class="z-10 flex size-10 items-center justify-center rounded-full bg-slate-800 border-2 border-slate-700 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col bg-slate-800/40 p-4 rounded-xl border border-slate-700">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold">Speed Test Completed</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-0.5">02:15 PM • Latency: 24ms</p>
+</div>
+<button class="flex items-center justify-center rounded-lg h-8 px-3 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors">
+                            View
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<nav class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-primary/10 px-4 pb-6 pt-2">
+<div class="flex gap-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-[1]">history</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Timeline</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">map</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Map</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">show_chart</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Tests</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Settings</p>
+</a>
+</div>
+</nav>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

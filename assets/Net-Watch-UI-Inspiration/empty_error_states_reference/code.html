@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetWatch Status - Empty &amp; Error States</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 border-b border-slate-200 dark:border-primary/10 sticky top-0 z-10">
+<button class="text-slate-900 dark:text-slate-100 flex size-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight flex-1 text-center pr-10">System Status</h2>
+</div>
+<main class="flex-1 flex flex-col gap-8 p-4 pb-24 max-w-md mx-auto w-full">
+<!-- 1. Empty State: No Logs Found -->
+<section class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary">Traffic Logs</h3>
+<div class="flex flex-col items-center justify-center p-8 rounded-xl bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/10 text-center">
+<div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-primary/10">
+<span class="material-symbols-outlined text-4xl text-slate-400 dark:text-primary/40">list_alt</span>
+</div>
+<p class="text-lg font-bold mb-2">No Logs Found</p>
+<p class="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                        Your network activity log is currently empty. Start monitoring to capture real-time packets and traffic data.
+                    </p>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-background-dark hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+                        Start Monitoring
+                    </button>
+</div>
+</section>
+<!-- 2. Error State: No Connection (Coverage Map) -->
+<section class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary">Coverage Map</h3>
+<div class="relative overflow-hidden rounded-xl bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/10 min-h-[240px] flex flex-col items-center justify-center p-6">
+<!-- Abstract Background Pattern for "Broken Map" -->
+<div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#66ffdb_1px,transparent_1px)] [background-size:20px_20px]"></div>
+<div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+<span class="material-symbols-outlined text-3xl">wifi_off</span>
+</div>
+<p class="text-lg font-bold mb-1">No Connection</p>
+<p class="text-sm text-slate-600 dark:text-slate-400 text-center max-w-[240px] mb-6">
+                        Unable to fetch map data. Please check your internet connection or proxy settings.
+                    </p>
+<button class="flex items-center gap-2 rounded-lg bg-slate-200 dark:bg-primary/20 px-5 py-2.5 text-sm font-semibold hover:bg-slate-300 dark:hover:bg-primary/30 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                        Retry Connection
+                    </button>
+</div>
+</section>
+<!-- 3. Permission State: Permission Required -->
+<section class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary">Location Services</h3>
+<div class="flex flex-col p-6 rounded-xl bg-slate-100 dark:bg-primary/5 border border-slate-200 dark:border-primary/10">
+<div class="flex items-start gap-4 mb-6">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<p class="font-bold">Permission Required</p>
+<p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                NetWatch needs access to your location to accurately map cell towers and signal strength in your area.
+                            </p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-background-dark hover:opacity-90">
+                            Enable Location
+                        </button>
+<button class="flex-1 rounded-lg border border-slate-300 dark:border-primary/20 px-4 py-2.5 text-sm font-medium hover:bg-slate-200 dark:hover:bg-primary/10">
+                            Learn More
+                        </button>
+</div>
+</div>
+</section>
+<!-- 4. Error State: No SIM (Profile Manager) -->
+<section class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-widest text-primary">Profile Manager</h3>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-100 dark:bg-primary/5 border border-dashed border-slate-300 dark:border-primary/30">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-primary/10 text-slate-500 dark:text-primary/50">
+<span class="material-symbols-outlined">sim_card_alert</span>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-sm">No SIM Card Detected</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Insert a card to manage profiles</p>
+</div>
+<button class="text-primary hover:underline text-sm font-bold px-2">
+                        Scan
+                    </button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 flex border-t border-slate-200 dark:border-primary/10 bg-background-light dark:bg-background-dark px-4 pb-6 pt-2 z-20">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">format_list_bulleted</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">map</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Map</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">sim_card</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Profiles</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium uppercase tracking-wider">Settings</p>
+</a>
+</nav>
+</div>
+</body></html>

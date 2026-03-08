@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetWatch Motion Design System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 sticky top-0 z-10 border-b border-primary/10">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-primary/10 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight ml-2">Motion Principles</h1>
+<div class="ml-auto text-primary">
+<span class="material-symbols-outlined">auto_videocam</span>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<!-- Core Easing Section -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">timeline</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Core Easing Curves</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Standard Easing -->
+<div class="flex flex-col gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-semibold">Standard</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Ease In/Out</p>
+</div>
+<span class="text-primary font-bold text-lg">300ms</span>
+</div>
+<div class="h-32 w-full relative overflow-hidden rounded-lg bg-background-dark/50 p-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-primary" d="M 0 100 C 40 100, 60 0, 100 0" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="text-primary/10" d="M 0 100 C 40 100, 60 0, 100 0 L 100 100 L 0 100 Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] uppercase tracking-widest text-slate-500">
+<span>Start</span>
+<span>End</span>
+</div>
+</div>
+<!-- Decelerate -->
+<div class="flex flex-col gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-semibold">Decelerate</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Ease Out</p>
+</div>
+<span class="text-primary font-bold text-lg">250ms</span>
+</div>
+<div class="h-32 w-full relative overflow-hidden rounded-lg bg-background-dark/50 p-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-primary" d="M 0 100 C 0 40, 40 0, 100 0" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="text-primary/10" d="M 0 100 C 0 40, 40 0, 100 0 L 100 100 L 0 100 Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] uppercase tracking-widest text-slate-500">
+<span>Incoming</span>
+<span>Settled</span>
+</div>
+</div>
+<!-- Accelerate -->
+<div class="flex flex-col gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-semibold">Accelerate</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Ease In</p>
+</div>
+<span class="text-primary font-bold text-lg">200ms</span>
+</div>
+<div class="h-32 w-full relative overflow-hidden rounded-lg bg-background-dark/50 p-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path class="text-primary" d="M 0 100 C 60 100, 100 60, 100 0" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="text-primary/10" d="M 0 100 C 60 100, 100 60, 100 0 L 100 100 L 0 100 Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex justify-between text-[10px] uppercase tracking-widest text-slate-500">
+<span>Stationary</span>
+<span>Exit</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Micro-interactions Section -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">touch_app</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Micro-interactions</h2>
+</div>
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-6 flex flex-wrap gap-8 items-center justify-around">
+<div class="flex flex-col items-center gap-3">
+<div class="size-14 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 cursor-pointer scale-95 transition-transform">
+<span class="material-symbols-outlined text-background-dark">add</span>
+</div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-tighter">Scale Press</p>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="w-12 h-6 bg-primary rounded-full relative p-1 cursor-pointer">
+<div class="size-4 bg-background-dark rounded-full translate-x-6"></div>
+</div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-tighter">Toggle Switch</p>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="size-14 border-2 border-primary rounded-full flex items-center justify-center relative">
+<div class="absolute inset-0 border-2 border-primary rounded-full animate-ping opacity-20"></div>
+<span class="material-symbols-outlined text-primary">sensors</span>
+</div>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-tighter">Radial Feedback</p>
+</div>
+</div>
+</section>
+<!-- Screen Transitions -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">layers</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Screen Transitions</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+<div class="size-12 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">move_item</span>
+</div>
+<div>
+<p class="text-slate-100 font-medium">Shared Element</p>
+<p class="text-slate-400 text-sm">Persistent identity across screens</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
+<div class="size-12 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">side_navigation</span>
+</div>
+<div>
+<p class="text-slate-100 font-medium">Slide-in Cascade</p>
+<p class="text-slate-400 text-sm">Sequential item entry (20ms delay)</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Data Feedback -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm">data_exploration</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Data Feedback</h2>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-slate-800/30 rounded-xl p-4 border border-primary/5">
+<div class="flex justify-between items-center mb-3">
+<span class="text-sm font-medium">System Pulse</span>
+<span class="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-full">Active</span>
+</div>
+<div class="flex gap-1 items-end h-8">
+<div class="w-full bg-primary/40 h-1/2 rounded-t-sm"></div>
+<div class="w-full bg-primary/60 h-3/4 rounded-t-sm"></div>
+<div class="w-full bg-primary h-full rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-1/3 rounded-t-sm"></div>
+<div class="w-full bg-primary/50 h-2/3 rounded-t-sm"></div>
+<div class="w-full bg-primary/80 h-4/5 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-1/4 rounded-t-sm"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-slate-800/30 rounded-xl border border-primary/5 flex flex-col items-center gap-3">
+<div class="size-10 border-2 border-primary/20 border-t-primary rounded-full"></div>
+<p class="text-xs text-slate-400">Loading State</p>
+</div>
+<div class="p-4 bg-slate-800/30 rounded-xl border border-primary/5 flex flex-col items-center gap-3">
+<div class="size-10 flex items-center justify-center">
+<div class="size-6 bg-primary/20 rounded-full flex items-center justify-center">
+<div class="size-2 bg-primary rounded-full"></div>
+</div>
+</div>
+<p class="text-xs text-slate-400">Gauge Pulse</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full flex gap-2 border-t border-primary/10 bg-background-dark/95 backdrop-blur-md px-4 pb-4 pt-2 z-20">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-xs font-medium leading-normal tracking-tight">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<p class="text-xs font-medium leading-normal tracking-tight">Alerts</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">motion_mode</span>
+<p class="text-xs font-medium leading-normal tracking-tight">Motion</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-xs font-medium leading-normal tracking-tight">Settings</p>
+</a>
+</nav>
+</div>
+</body></html>

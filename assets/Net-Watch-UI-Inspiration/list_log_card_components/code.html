@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Header -->
+<header class="sticky top-0 z-10 border-b border-primary/10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-3">
+<div class="flex items-center justify-between max-w-2xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<h1 class="text-lg font-bold tracking-tight">NetWatch UI System</h1>
+</div>
+<button class="p-2 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto p-4 pb-24 space-y-6">
+<!-- Grouped List Header -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-primary/70">Critical Anomalies</h2>
+<span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold">2 LIVE</span>
+</div>
+<!-- Anomaly/Outage Card -->
+<div class="bg-white dark:bg-primary/5 border border-primary/10 rounded-xl p-4 shadow-sm mb-3">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="size-10 rounded-lg bg-red-500/20 flex items-center justify-center text-red-400">
+<span class="material-symbols-outlined">signal_cellular_connected_no_internet_4_bar</span>
+</div>
+<div>
+<h3 class="font-bold text-base">No Service</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Critical signal loss detected</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-mono font-bold text-red-400">00:14:22</p>
+<div class="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-bold mt-1">
+<span class="material-symbols-outlined text-[12px]">location_on</span>
+<span>Berlin Sector 4</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Grouped List Header -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-primary/70">Network Connectivity</h2>
+</div>
+<!-- Event Log Card (Transition) -->
+<div class="bg-white dark:bg-primary/5 border border-primary/10 rounded-xl p-4 shadow-sm mb-3">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-mono text-slate-500">14:20:05.122</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">STABLE</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-bold">5G</span>
+<span class="material-symbols-outlined text-sm text-primary/50">trending_flat</span>
+<span class="font-bold">LTE</span>
+</div>
+<p class="text-sm text-slate-400 leading-tight">Handoff successful due to RSRP threshold</p>
+</div>
+<div class="text-right">
+<div class="flex items-center justify-end gap-1 text-primary">
+<span class="material-symbols-outlined text-lg">signal_cellular_alt</span>
+<span class="font-bold font-mono">-102</span>
+<span class="text-[10px] font-normal">dBm</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Annotation Card -->
+<div class="bg-primary/10 border border-dashed border-primary/30 rounded-xl p-4 mb-3 relative group">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary">sticky_note_2</span>
+<span class="text-[10px] font-bold uppercase text-primary/70">Operator Note</span>
+</div>
+<button class="text-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<p class="text-sm italic text-slate-300">"Tower maintenance scheduled for tomorrow morning. Expected intermittent drops in Sector 7."</p>
+</div>
+</section>
+<!-- Grouped List Header -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-primary/70">Active Profiles</h2>
+</div>
+<!-- SIM/Profile List Item 1 -->
+<div class="bg-white dark:bg-primary/5 border border-primary/10 rounded-xl overflow-hidden shadow-sm mb-2">
+<div class="p-4 flex items-center gap-4">
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/20" style="height: 65%;"></div> <!-- Simulated fill -->
+<span class="material-symbols-outlined relative z-10">sim_card</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="font-bold truncate text-sm">Vodafone DE (eSIM)</h4>
+<span class="text-[10px] font-bold text-primary">+49 152 2341 0988</span>
+</div>
+<div class="mt-2">
+<div class="flex justify-between text-[10px] mb-1 text-slate-500">
+<span>6.2 GB used</span>
+<span>10 GB limit</span>
+</div>
+<div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 62%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SIM/Profile List Item 2 -->
+<div class="bg-white dark:bg-primary/5 border border-primary/10 rounded-xl overflow-hidden shadow-sm mb-2">
+<div class="p-4 flex items-center gap-4">
+<div class="size-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
+<span class="material-symbols-outlined">sim_card</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="font-bold truncate text-sm text-slate-400">T-Mobile US</h4>
+<span class="text-[10px] font-bold text-slate-500">Roaming Inactive</span>
+</div>
+<div class="mt-2">
+<div class="w-full bg-slate-800/50 h-1 rounded-full overflow-hidden">
+<div class="bg-slate-600 h-full rounded-full" style="width: 0%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Signal Visualizer (Custom Component) -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-primary/70">Signal History</h2>
+</div>
+<div class="bg-white dark:bg-primary/5 border border-primary/10 rounded-xl p-4 h-32 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[55%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[50%]"></div>
+<div class="flex-1 bg-red-500/40 rounded-t-sm h-[15%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-sm h-[75%]"></div>
+<div class="flex-1 bg-primary/80 rounded-t-sm h-[90%]"></div>
+<div class="flex-1 bg-primary h-[95%]"></div>
+<div class="flex-1 bg-primary/70 rounded-t-sm h-[70%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/20 rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/30 rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary/50 rounded-t-sm h-[60%]"></div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 right-0 border-t border-primary/10 bg-background-light dark:bg-background-dark/95 backdrop-blur-lg pb-6 pt-2 px-4">
+<div class="max-w-2xl mx-auto flex items-center justify-between">
+<a class="flex flex-col items-center gap-1 flex-1 text-primary" href="#">
+<span class="material-symbols-outlined filled-icon">format_list_bulleted</span>
+<span class="text-[10px] font-bold">Logs</span>
+</a>
+<a class="flex flex-col items-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</a>
+<a class="flex flex-col items-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">sim_card</span>
+<span class="text-[10px] font-medium">SIMs</span>
+</a>
+<a class="flex flex-col items-center gap-1 flex-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>

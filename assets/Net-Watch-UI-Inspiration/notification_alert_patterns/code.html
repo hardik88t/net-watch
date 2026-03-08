@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NetWatch Design System - Notifications &amp; Alerts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-slate-200 dark:border-primary/10">
+<div class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Alert Patterns</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-12 bg-transparent text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+</div>
+</div>
+<div class="flex-1 pb-24">
+<!-- Section 1: In-App Banners (Top-anchored) -->
+<div class="px-4 pt-6">
+<h3 class="text-primary text-sm font-bold uppercase tracking-wider mb-4">In-App Banner (Temporary Status)</h3>
+<!-- Success Banner -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-slate-100 dark:bg-primary/10 p-4 border border-slate-200 dark:border-primary/20 mb-4 shadow-sm">
+<div class="flex flex-[2_2_0px] flex-col gap-3">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+<p class="text-slate-600 dark:text-primary/70 text-xs font-bold uppercase">Connectivity</p>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-bold leading-tight">Speed test complete</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Download: 450 Mbps | Upload: 52 Mbps</p>
+</div>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-slate-200 dark:bg-primary/20 text-slate-900 dark:text-primary text-sm font-bold w-fit">
+<span>View Details</span>
+</button>
+</div>
+<div class="w-24 bg-slate-200 dark:bg-primary/5 rounded-lg flex items-center justify-center border border-slate-300 dark:border-primary/10 overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-primary/20 to-transparent" data-alt="Abstract teal data visualization background pattern"></div>
+</div>
+</div>
+<!-- Warning Banner -->
+<div class="flex items-center gap-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 p-4 border border-amber-200 dark:border-amber-500/20 mb-4">
+<div class="p-2 bg-amber-100 dark:bg-amber-500/20 rounded-full">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-400">sim_card_alert</span>
+</div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-slate-100 text-sm font-bold">SIM Swap Detected</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">New hardware configuration identified</p>
+</div>
+<span class="material-symbols-outlined text-slate-400">close</span>
+</div>
+</div>
+<!-- Section 2: Critical System Alerts (Overlay) -->
+<div class="px-4 pt-8">
+<h3 class="text-red-500 text-sm font-bold uppercase tracking-wider mb-4">Critical System Alerts (High Urgency)</h3>
+<div class="relative overflow-hidden rounded-xl bg-red-600 p-6 text-white shadow-lg shadow-red-900/20">
+<div class="absolute top-0 right-0 p-4 opacity-20">
+<span class="material-symbols-outlined text-6xl">error</span>
+</div>
+<div class="relative z-10 flex flex-col gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined filled-icon">warning</span>
+<span class="text-xs font-bold uppercase tracking-widest opacity-90">Immediate Action Required</span>
+</div>
+<h4 class="text-2xl font-black tracking-tight">Total Network Outage</h4>
+<p class="text-sm opacity-90 leading-relaxed">External gateway is unreachable. All connected devices have lost internet access. Check local hardware connections.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-white text-red-600 font-bold py-3 rounded-lg text-sm uppercase tracking-wide">Troubleshoot</button>
+<button class="flex-1 bg-red-700/50 border border-white/20 text-white font-bold py-3 rounded-lg text-sm uppercase tracking-wide">Dismiss</button>
+</div>
+</div>
+</div>
+<div class="mt-4 rounded-xl bg-slate-900 border border-slate-700 p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-red-400 text-xs font-bold uppercase">Usage Warning</p>
+<h4 class="text-white text-lg font-bold">Data Limit Reached</h4>
+</div>
+<div class="text-red-400">
+<span class="material-symbols-outlined text-3xl">data_usage</span>
+</div>
+</div>
+<div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-2">
+<div class="bg-red-500 h-full w-full"></div>
+</div>
+<p class="text-slate-400 text-xs mb-4">100% of monthly 500GB plan used.</p>
+<button class="w-full bg-primary text-background-dark font-bold py-2 rounded-lg text-sm">Upgrade Plan</button>
+</div>
+</div>
+<!-- Section 3: Notification Center Cards (Android Style) -->
+<div class="px-4 pt-8">
+<h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Notification Center (Tray View)</h3>
+<div class="flex flex-col gap-2 bg-slate-200/50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+<!-- Notification Card 1 -->
+<div class="bg-white dark:bg-background-dark rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex gap-3">
+<div class="size-10 bg-primary/20 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl filled-icon">security</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">Security Shield</span>
+<span class="text-[10px] text-slate-400">2m ago</span>
+</div>
+<p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Threat Blocked</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">Suspicious connection attempt from 192.168.1.45 was neutralized.</p>
+</div>
+</div>
+<!-- Notification Card 2 -->
+<div class="bg-white dark:bg-background-dark rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex gap-3">
+<div class="size-10 bg-slate-100 dark:bg-primary/5 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-slate-500 dark:text-primary text-xl">devices</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">NetWatch Home</span>
+<span class="text-[10px] text-slate-400">15m ago</span>
+</div>
+<p class="text-sm font-semibold text-slate-800 dark:text-slate-200">New Device Connected</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">"MacBook Pro" has joined the private network.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Status Bar Icons -->
+<div class="px-4 pt-8">
+<h3 class="text-slate-500 text-sm font-bold uppercase tracking-wider mb-4">Status Bar (Monitoring States)</h3>
+<div class="flex items-center gap-6 bg-slate-100 dark:bg-background-dark/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 w-fit">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">speed</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Active</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-xl">vibration</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Silent</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-red-500 text-xl">wifi_off</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Off</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl filled-icon">shield</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Secure</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex gap-2 border-t border-slate-200 dark:border-primary/10 bg-white dark:bg-background-dark px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 dark:text-primary/50" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 dark:text-primary/50" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">router</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Devices</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined filled-icon">notifications_active</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-wide uppercase">Alerts</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 dark:text-primary/50" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

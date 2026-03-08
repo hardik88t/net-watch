@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#66ffdb",
+              "background-light": "#f5f8f8",
+              "background-dark": "#0f231e",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<title>NetWatch - Export Report</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 border-b border-slate-200 dark:border-primary/10">
+<button class="text-slate-900 dark:text-slate-100 p-2 hover:bg-slate-200 dark:hover:bg-primary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold ml-2">Export Report</h1>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-32">
+<div class="p-4">
+<h2 class="text-2xl font-bold mb-1">Report Preview</h2>
+<p class="text-slate-500 dark:text-primary/60 text-sm mb-6">NetWatch Analytics Summary for October</p>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-primary/20 bg-white dark:bg-primary/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">warning</span>
+<p class="text-slate-600 dark:text-slate-300 text-xs font-medium uppercase tracking-wider">Total Anomalies</p>
+</div>
+<p class="text-2xl font-bold">128</p>
+<p class="text-emerald-500 text-xs font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span>
+                        +12% from last month
+                    </p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 border border-slate-200 dark:border-primary/20 bg-white dark:bg-primary/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">speed</span>
+<p class="text-slate-600 dark:text-slate-300 text-xs font-medium uppercase tracking-wider">Avg. Speed</p>
+</div>
+<p class="text-2xl font-bold">450 <span class="text-sm font-normal text-slate-500">Mbps</span></p>
+<p class="text-rose-500 text-xs font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_down</span>
+                        -5% latency spike
+                    </p>
+</div>
+</div>
+<section class="space-y-4 mb-8">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-primary/40 px-1">Configuration Details</h3>
+<div class="bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/10 overflow-hidden">
+<div class="flex justify-between items-center p-4 border-b border-slate-100 dark:border-primary/5">
+<span class="text-slate-600 dark:text-slate-400 text-sm">Date Range</span>
+<span class="font-medium text-sm">Oct 01 - Oct 31, 2023</span>
+</div>
+<div class="flex justify-between items-center p-4 border-b border-slate-100 dark:border-primary/5">
+<span class="text-slate-600 dark:text-slate-400 text-sm">Target Nodes</span>
+<span class="font-medium text-sm">All Active (14 Nodes)</span>
+</div>
+<div class="flex justify-between items-center p-4">
+<span class="text-slate-600 dark:text-slate-400 text-sm">Security Level</span>
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30 uppercase">High Audit</span>
+</div>
+</div>
+</section>
+<section class="space-y-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 dark:text-primary/40 px-1">Included Log Types</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-3 bg-white dark:bg-primary/5 rounded-lg border border-slate-100 dark:border-primary/5">
+<div class="bg-primary/10 p-2 rounded">
+<span class="material-symbols-outlined text-primary text-xl">security</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-sm">Security Breach Attempts</p>
+<p class="text-xs text-slate-500">42 incidents recorded</p>
+</div>
+<span class="material-symbols-outlined text-emerald-500">check_circle</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-white dark:bg-primary/5 rounded-lg border border-slate-100 dark:border-primary/5">
+<div class="bg-primary/10 p-2 rounded">
+<span class="material-symbols-outlined text-primary text-xl">router</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-sm">Hardware Performance</p>
+<p class="text-xs text-slate-500">2,400 metric points</p>
+</div>
+<span class="material-symbols-outlined text-emerald-500">check_circle</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-white dark:bg-primary/5 rounded-lg border border-slate-100 dark:border-primary/5">
+<div class="bg-primary/10 p-2 rounded">
+<span class="material-symbols-outlined text-primary text-xl">person_search</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-sm">User Access Logs</p>
+<p class="text-xs text-slate-500">14 active administrators</p>
+</div>
+<span class="material-symbols-outlined text-emerald-500">check_circle</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<div class="fixed bottom-16 left-0 right-0 p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-t border-slate-200 dark:border-primary/10 flex gap-4">
+<button class="flex-1 bg-slate-200 dark:bg-primary/10 text-slate-900 dark:text-primary font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-300 dark:hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined">description</span>
+            Export PDF
+        </button>
+<button class="flex-1 bg-primary text-background-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">table_view</span>
+            Export CSV
+        </button>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 flex border-t border-slate-200 dark:border-primary/10 bg-white dark:bg-background-dark/95 px-4 pb-4 pt-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<p class="text-[10px] font-medium uppercase tracking-tighter">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<p class="text-[10px] font-medium uppercase tracking-tighter">Logs</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">analytics</span>
+<p class="text-[10px] font-medium uppercase tracking-tighter">Reports</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium uppercase tracking-tighter">Settings</p>
+</a>
+</nav>
+</body></html>

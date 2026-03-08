@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#66ffdb",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gauge-ring {
+            transform: rotate(-90deg);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Header / Navigation -->
+<header class="flex items-center bg-background-light dark:bg-background-dark p-4 border-b border-primary/10 justify-between sticky top-0 z-10 backdrop-blur-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+<div>
+<h1 class="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">NetWatch Design System</h1>
+<p class="text-[10px] uppercase tracking-widest text-primary font-semibold">Data Viz &amp; Indicators</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</header>
+<main class="p-4 max-w-2xl mx-auto space-y-8 pb-24">
+<!-- Section 1: Signal Gauges -->
+<section>
+<h2 class="text-primary text-xs font-bold uppercase tracking-wider mb-4 px-1">01. Signal Gauges</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Gauge 1: dBm -->
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+<div class="relative w-24 h-24 mb-3">
+<svg class="w-full h-full gauge-ring">
+<circle class="text-primary/10" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl font-bold">-82</span>
+<span class="text-[10px] text-slate-400">dBm</span>
+</div>
+</div>
+<p class="text-sm font-medium">Signal Strength</p>
+</div>
+<!-- Gauge 2: Mbps -->
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+<div class="relative w-24 h-24 mb-3">
+<svg class="w-full h-full gauge-ring">
+<circle class="text-primary/10" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary shadow-[0_0_10px_rgba(102,255,219,0.5)]" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="140" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl font-bold">45.8</span>
+<span class="text-[10px] text-slate-400">Mbps</span>
+</div>
+</div>
+<p class="text-sm font-medium">Download Speed</p>
+</div>
+</div>
+</section>
+<!-- Section 2: Status Badges -->
+<section>
+<h2 class="text-primary text-xs font-bold uppercase tracking-wider mb-4 px-1">02. Status Badges</h2>
+<div class="space-y-4">
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-primary text-background-dark rounded-full text-[10px] font-bold">5G ULTRA</span>
+<span class="px-3 py-1 bg-primary/20 border border-primary/30 text-primary rounded-full text-[10px] font-bold">LTE</span>
+<span class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-[10px] font-bold">4G+</span>
+<span class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-[10px] font-bold">WI-FI 6</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ONLINE
+                    </span>
+<span class="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> ROAMING
+                    </span>
+<span class="flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> OUTAGE
+                    </span>
+</div>
+</div>
+</section>
+<!-- Section 3: Mini-Charts -->
+<section>
+<h2 class="text-primary text-xs font-bold uppercase tracking-wider mb-4 px-1">03. Mini-Charts (Stability)</h2>
+<div class="grid grid-cols-1 gap-3">
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-center justify-between">
+<div>
+<p class="text-xs text-slate-400 mb-1">Latency Trend</p>
+<p class="text-lg font-bold">24ms <span class="text-[10px] font-normal text-emerald-400">Stable</span></p>
+</div>
+<div class="w-32 h-10 flex items-end gap-[2px]">
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[40%] rounded-t-sm shadow-[0_0_8px_rgba(102,255,219,0.3)]"></div>
+<div class="flex-1 bg-primary/20 h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[65%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm"></div>
+</div>
+</div>
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-center justify-between">
+<div>
+<p class="text-xs text-slate-400 mb-1">Jitter</p>
+<p class="text-lg font-bold">2.1ms <span class="text-[10px] font-normal text-rose-400">+0.4</span></p>
+</div>
+<div class="w-32 h-10 overflow-hidden relative">
+<svg class="absolute bottom-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 40">
+<path class="text-primary" d="M0,35 Q10,10 20,30 T40,20 T60,35 T80,15 T100,30" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path class="text-primary/10" d="M0,35 Q10,10 20,30 T40,20 T60,35 T80,15 T100,30 L100,40 L0,40 Z" fill="currentColor"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Signal Bars -->
+<section>
+<h2 class="text-primary text-xs font-bold uppercase tracking-wider mb-4 px-1">04. Signal Bars</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-4">
+<p class="text-[10px] text-slate-400 uppercase mb-3 font-semibold">Cellular Variations</p>
+<div class="flex justify-between items-center text-primary">
+<span class="material-symbols-outlined opacity-30">signal_cellular_0_bar</span>
+<span class="material-symbols-outlined opacity-60">signal_cellular_2_bar</span>
+<span class="material-symbols-outlined">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined">signal_cellular_connected_no_internet_4_bar</span>
+</div>
+</div>
+<div class="bg-primary/5 border border-primary/10 rounded-xl p-4">
+<p class="text-[10px] text-slate-400 uppercase mb-3 font-semibold">Wi-Fi Variations</p>
+<div class="flex justify-between items-center text-primary">
+<span class="material-symbols-outlined opacity-30">wifi_1_bar</span>
+<span class="material-symbols-outlined opacity-60">wifi_2_bar</span>
+<span class="material-symbols-outlined">wifi</span>
+<span class="material-symbols-outlined">signal_wifi_bad</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Technical Data Readouts -->
+<section>
+<h2 class="text-primary text-xs font-bold uppercase tracking-wider mb-4 px-1">05. High-Density Readouts</h2>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+<p class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">Local IPv4</p>
+<p class="text-xs font-mono text-slate-300">192.168.1.124</p>
+</div>
+<div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+<p class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">Gateway</p>
+<p class="text-xs font-mono text-slate-300">fe80::1%en0</p>
+</div>
+<div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+<p class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">Coordinates</p>
+<p class="text-xs font-mono text-slate-300">34.0522° N, 118.2437° W</p>
+</div>
+<div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+<p class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">MAC Address</p>
+<p class="text-xs font-mono text-slate-300">00:1A:2B:3C:4D:5E</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar Component -->
+<nav class="fixed bottom-0 left-0 right-0 border-t border-primary/10 bg-background-light dark:bg-background-dark/90 backdrop-blur-xl px-4 pb-6 pt-2 z-20">
+<div class="flex gap-2 max-w-lg mx-auto">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 rounded-full text-primary" href="#">
+<span class="material-symbols-outlined text-2xl">category</span>
+<p class="text-[10px] font-bold leading-normal">Components</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">palette</span>
+<p class="text-[10px] font-medium leading-normal">Tokens</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">list_alt</span>
+<p class="text-[10px] font-medium leading-normal">Guidelines</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<p class="text-[10px] font-medium leading-normal">Config</p>
+</a>
+</div>
+</nav>
+</body></html>
