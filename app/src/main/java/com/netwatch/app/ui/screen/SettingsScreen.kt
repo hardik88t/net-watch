@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.SettingsSuggest
 import androidx.compose.material3.Icon
@@ -51,6 +52,10 @@ fun SettingsScreen(
     onSignalDropThresholdChange: (Int) -> Unit,
     onTechDowngradeToggle: (Boolean) -> Unit,
     onDeadAirToggle: (Boolean) -> Unit,
+    onCompactTimelineModeToggle: (Boolean) -> Unit,
+    onMapAutoCenterToggle: (Boolean) -> Unit,
+    onMapOfflineMinZoomChange: (Int) -> Unit,
+    onMapOfflineMaxZoomChange: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -176,6 +181,44 @@ fun SettingsScreen(
             checked = constraints.triggerOnDeadAir,
             onCheckedChange = onDeadAirToggle,
             icon = Icons.Rounded.Bolt,
+        )
+
+        SectionTitle("Personalization")
+
+        ToggleCard(
+            title = "Compact timeline cards",
+            description = "Use denser timeline cards for faster scanning",
+            checked = constraints.compactTimelineMode,
+            onCheckedChange = onCompactTimelineModeToggle,
+            icon = Icons.Rounded.SettingsSuggest,
+        )
+
+        ToggleCard(
+            title = "Map auto-center",
+            description = "Auto-center map on latest geotagged point",
+            checked = constraints.mapAutoCenter,
+            onCheckedChange = onMapAutoCenterToggle,
+            icon = Icons.Rounded.Map,
+        )
+
+        SliderCard(
+            label = "Offline map min zoom",
+            value = constraints.mapOfflineMinZoom.toFloat(),
+            valueRange = 8f..16f,
+            steps = 7,
+            valueSuffix = "z",
+            onValueChange = { onMapOfflineMinZoomChange(it.toInt().coerceAtMost(constraints.mapOfflineMaxZoom)) },
+            icon = Icons.Rounded.Map,
+        )
+
+        SliderCard(
+            label = "Offline map max zoom",
+            value = constraints.mapOfflineMaxZoom.toFloat(),
+            valueRange = 10f..18f,
+            steps = 7,
+            valueSuffix = "z",
+            onValueChange = { onMapOfflineMaxZoomChange(it.toInt().coerceAtLeast(constraints.mapOfflineMinZoom)) },
+            icon = Icons.Rounded.Map,
         )
     }
 }

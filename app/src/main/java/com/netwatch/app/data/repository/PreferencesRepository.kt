@@ -16,6 +16,10 @@ interface PreferencesRepository {
     suspend fun setSignalDropThresholdDbm(value: Int)
     suspend fun setTriggerOnTechDowngrade(enabled: Boolean)
     suspend fun setTriggerOnDeadAir(enabled: Boolean)
+    suspend fun setCompactTimelineMode(enabled: Boolean)
+    suspend fun setMapAutoCenter(enabled: Boolean)
+    suspend fun setMapOfflineMinZoom(value: Int)
+    suspend fun setMapOfflineMaxZoom(value: Int)
     suspend fun setOnboardingCompleted(completed: Boolean)
     val onboardingCompleted: Flow<Boolean>
 }

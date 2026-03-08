@@ -13,8 +13,8 @@ android {
         applicationId = "com.netwatch.app"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = providers.gradleProperty("NETWATCH_VERSION_CODE").orNull?.toIntOrNull() ?: 2
+        versionName = providers.gradleProperty("NETWATCH_VERSION_NAME").orNull ?: "0.2.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -85,6 +85,7 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")

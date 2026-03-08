@@ -188,6 +188,30 @@ class MainViewModel(
         }
     }
 
+    fun setCompactTimelineMode(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setCompactTimelineMode(enabled)
+        }
+    }
+
+    fun setMapAutoCenter(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setMapAutoCenter(enabled)
+        }
+    }
+
+    fun setMapOfflineMinZoom(value: Int) {
+        viewModelScope.launch {
+            preferencesRepository.setMapOfflineMinZoom(value)
+        }
+    }
+
+    fun setMapOfflineMaxZoom(value: Int) {
+        viewModelScope.launch {
+            preferencesRepository.setMapOfflineMaxZoom(value)
+        }
+    }
+
     fun exportFormattedReport() {
         viewModelScope.launch {
             runCatching { reportExporter.exportFormattedReport() }

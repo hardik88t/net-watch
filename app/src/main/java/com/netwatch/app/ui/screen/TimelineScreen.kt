@@ -49,6 +49,7 @@ import java.util.Locale
 fun TimelineScreen(
     items: List<TimelineItem>,
     onAddNote: (Long?, String) -> Unit,
+    compactMode: Boolean,
 ) {
     var noteDialogItem by remember { mutableStateOf<TimelineItem?>(null) }
     var selectedFilter by remember { mutableStateOf(TimelineFilter.ALL) }
@@ -137,9 +138,18 @@ fun TimelineScreen(
                 )
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(if (compactMode) 8.dp else 10.dp),
+            ) {
                 items(filteredItems, key = { it.event.id }) { item ->
-                    TimelineItemCard(item = item, onAddNote = { noteDialogItem = item })
+                    TimelineItemCard(
+                        item = item,
+                        compactMode = compactMode,
+                        onAddNote = { noteDialogItem = item },
+                    )
                 }
             }
         }
@@ -158,6 +168,7 @@ fun TimelineScreen(
 @Composable
 private fun TimelineItemCard(
     item: TimelineItem,
+    compactMode: Boolean,
     onAddNote: () -> Unit,
 ) {
     val event = item.event
@@ -176,7 +187,10 @@ private fun TimelineItemCard(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            modifier = Modifier.padding(if (compactMode) 10.dp else 14.dp),
+            verticalArrangement = Arrangement.spacedBy(if (compactMode) 6.dp else 8.dp),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -194,7 +208,12 @@ private fun TimelineItemCard(
                 )
             }
 
-            Text(text = event.message, color = NetWatchPrimaryText, fontSize = 17.sp, lineHeight = 24.sp)
+            Text(
+                text = event.message,
+                color = NetWatchPrimaryText,
+                fontSize = if (compactMode) 15.sp else 17.sp,
+                lineHeight = if (compactMode) 20.sp else 24.sp,
+            )
             Text(
                 text = buildString {
                     append(event.profileKey ?: "unknown profile")
@@ -215,7 +234,7 @@ private fun TimelineItemCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(NetWatchAccent.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
-                        .padding(8.dp),
+                        .padding(if (compactMode) 6.dp else 8.dp),
                 )
             }
 

@@ -11,4 +11,8 @@ data class MonitoringConstraints(
     val signalDropThresholdDbm: Int = 20,
     val triggerOnTechDowngrade: Boolean = true,
     val triggerOnDeadAir: Boolean = true,
+    val compactTimelineMode: Boolean = false,
+    val mapAutoCenter: Boolean = true,
+    val mapOfflineMinZoom: Int = 11,
+    val mapOfflineMaxZoom: Int = 15,
 )

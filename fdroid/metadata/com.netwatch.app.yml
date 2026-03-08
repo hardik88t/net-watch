@@ -1,0 +1,31 @@
+Categories:
+  - Connectivity
+  - Internet
+License: GPL-3.0-or-later
+AuthorName: NetWatch Contributors
+AuthorEmail: maintainers@netwatch.app
+WebSite: https://github.com/hardik88t/net-watch
+SourceCode: https://github.com/hardik88t/net-watch
+IssueTracker: https://github.com/hardik88t/net-watch/issues
+
+Summary: Open-source network diagnostics and coverage logging
+Description: |
+  NetWatch is a privacy-first Android diagnostics app that records network transitions,
+  outages, anomalies, and on-demand speed tests with timestamped context.
+
+  Highlights:
+  - Lightweight passive monitoring
+  - Triggered heavy diagnostics
+  - Timeline and stats exports (CSV/JSON/report)
+  - OpenStreetMap-based coverage map with optional offline tile caching
+
+RepoType: git
+Repo: https://github.com/hardik88t/net-watch.git
+
+Builds:
+  - versionName: 0.2.0-beta.1
+    versionCode: 2
+    commit: HEAD
+    gradle:
+      - yes
+    output: app/build/outputs/apk/release/app-release-unsigned.apk

@@ -5,6 +5,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.netwatch.app.worker.LightweightCheckWorker
+import org.osmdroid.config.Configuration
 import java.util.concurrent.TimeUnit
 
 class NetWatchApplication : Application() {
@@ -14,6 +15,8 @@ class NetWatchApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Configuration.getInstance().load(this, getSharedPreferences("osmdroid", MODE_PRIVATE))
+        Configuration.getInstance().userAgentValue = packageName
         appContainer = AppContainer(this)
         scheduleLightweightWorker()
     }

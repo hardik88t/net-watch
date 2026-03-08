@@ -31,6 +31,10 @@ class DataStorePreferencesRepository(
             signalDropThresholdDbm = prefs[Keys.signalDropThresholdDbm] ?: 20,
             triggerOnTechDowngrade = prefs[Keys.triggerOnTechDowngrade] ?: true,
             triggerOnDeadAir = prefs[Keys.triggerOnDeadAir] ?: true,
+            compactTimelineMode = prefs[Keys.compactTimelineMode] ?: false,
+            mapAutoCenter = prefs[Keys.mapAutoCenter] ?: true,
+            mapOfflineMinZoom = prefs[Keys.mapOfflineMinZoom] ?: 11,
+            mapOfflineMaxZoom = prefs[Keys.mapOfflineMaxZoom] ?: 15,
         )
     }
 
@@ -48,6 +52,10 @@ class DataStorePreferencesRepository(
     override suspend fun setSignalDropThresholdDbm(value: Int) = store.write(Keys.signalDropThresholdDbm, value)
     override suspend fun setTriggerOnTechDowngrade(enabled: Boolean) = store.write(Keys.triggerOnTechDowngrade, enabled)
     override suspend fun setTriggerOnDeadAir(enabled: Boolean) = store.write(Keys.triggerOnDeadAir, enabled)
+    override suspend fun setCompactTimelineMode(enabled: Boolean) = store.write(Keys.compactTimelineMode, enabled)
+    override suspend fun setMapAutoCenter(enabled: Boolean) = store.write(Keys.mapAutoCenter, enabled)
+    override suspend fun setMapOfflineMinZoom(value: Int) = store.write(Keys.mapOfflineMinZoom, value)
+    override suspend fun setMapOfflineMaxZoom(value: Int) = store.write(Keys.mapOfflineMaxZoom, value)
     override suspend fun setOnboardingCompleted(completed: Boolean) = store.write(Keys.onboardingCompleted, completed)
 
     private suspend fun <T> DataStore<Preferences>.write(key: Preferences.Key<T>, value: T) {
@@ -67,6 +75,10 @@ class DataStorePreferencesRepository(
         val signalDropThresholdDbm = intPreferencesKey("signal_drop_threshold_dbm")
         val triggerOnTechDowngrade = booleanPreferencesKey("trigger_on_tech_downgrade")
         val triggerOnDeadAir = booleanPreferencesKey("trigger_on_dead_air")
+        val compactTimelineMode = booleanPreferencesKey("compact_timeline_mode")
+        val mapAutoCenter = booleanPreferencesKey("map_auto_center")
+        val mapOfflineMinZoom = intPreferencesKey("map_offline_min_zoom")
+        val mapOfflineMaxZoom = intPreferencesKey("map_offline_max_zoom")
         val onboardingCompleted = booleanPreferencesKey("onboarding_completed")
     }
 }

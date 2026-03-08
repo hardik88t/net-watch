@@ -99,11 +99,15 @@ fun NetWatchApp(
 
                 NetWatchDestination.MAP -> CoverageMapScreen(
                     timeline = timeline,
+                    autoCenter = constraints.mapAutoCenter,
+                    offlineMinZoom = constraints.mapOfflineMinZoom,
+                    offlineMaxZoom = constraints.mapOfflineMaxZoom,
                 )
 
                 NetWatchDestination.TIMELINE -> TimelineScreen(
                     items = timeline,
                     onAddNote = viewModel::addAnnotation,
+                    compactMode = constraints.compactTimelineMode,
                 )
 
                 NetWatchDestination.STATS -> StatsReportsScreen(
@@ -126,6 +130,10 @@ fun NetWatchApp(
                     onSignalDropThresholdChange = viewModel::setSignalDropThreshold,
                     onTechDowngradeToggle = viewModel::setTriggerOnTechDowngrade,
                     onDeadAirToggle = viewModel::setTriggerOnDeadAir,
+                    onCompactTimelineModeToggle = viewModel::setCompactTimelineMode,
+                    onMapAutoCenterToggle = viewModel::setMapAutoCenter,
+                    onMapOfflineMinZoomChange = viewModel::setMapOfflineMinZoom,
+                    onMapOfflineMaxZoomChange = viewModel::setMapOfflineMaxZoom,
                 )
             }
         }

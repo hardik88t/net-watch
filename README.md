@@ -50,6 +50,40 @@ Tracks every change in your network along with real internet speed and signal da
 ./gradlew assembleDebug
 ```
 
+## Versioning
+
+- App versioning now follows SemVer-style beta tags.
+- Current baseline:
+  - `versionName`: `0.2.0-beta.1`
+  - `versionCode`: `2`
+- CI can override with:
+  - `-PNETWATCH_VERSION_NAME=...`
+  - `-PNETWATCH_VERSION_CODE=...`
+
+## Release Automation
+
+- GitHub Actions workflows are included:
+  - `.github/workflows/android-ci.yml` : tests + debug build
+  - `.github/workflows/release.yml` : tag-based GitHub release with APK artifacts
+- Create a release by pushing a tag:
+
+```bash
+git tag v0.2.0-beta.1
+git push origin v0.2.0-beta.1
+```
+
+## F-Droid Support
+
+- Unsigned release packaging workflow:
+  - `.github/workflows/fdroid.yml`
+- F-Droid metadata template:
+  - `fdroid/metadata/com.netwatch.app.yml`
+- Build local F-Droid-compatible artifact:
+
+```bash
+./gradlew clean assembleRelease
+```
+
 
 ## Starting Folder Structure 
 
