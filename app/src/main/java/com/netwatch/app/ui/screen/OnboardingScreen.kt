@@ -5,6 +5,7 @@ import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.provider.Settings
@@ -21,7 +22,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LocationOn
@@ -33,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,6 +50,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -72,33 +75,56 @@ fun OnboardingScreen(
     var permissions by remember { mutableStateOf(readPermissionState(context)) }
     var showSkipWarning by remember { mutableStateOf(false) }
     var showUsageAccessHint by remember { mutableStateOf(false) }
+    var showBackgroundLocationHint by remember { mutableStateOf(false) }
 
     fun refreshState() {
         permissions = readPermissionState(context)
     }
 
-    val backgroundLocationLauncher = rememberLauncherForActivityResult(
+    val singlePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) {
         refreshState()
-        if (permissions.allRequiredGranted) {
-            onGrantAccess()
-        }
     }
 
     val runtimePermissionsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
     ) {
         refreshState()
-        if (
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            permissions.fineLocationGranted &&
-            !permissions.backgroundLocationGranted
-        ) {
-            backgroundLocationLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        } else if (permissions.allRequiredGranted) {
-            onGrantAccess()
+    }
+
+    fun requestBackgroundLocation() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || permissions.backgroundLocationGranted) {
+            return
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            showBackgroundLocationHint = true
+            openAppDetailsSettings(context)
+        } else {
+            showBackgroundLocationHint = false
+            singlePermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+    }
+
+    fun requestRuntimePermissions() {
+        val runtimePermissions = buildList {
+            if (!permissions.fineLocationGranted) {
+                add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            if (!permissions.phoneStateGranted) {
+                add(Manifest.permission.READ_PHONE_STATE)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !permissions.notificationsGranted) {
+                add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        if (runtimePermissions.isNotEmpty()) {
+            runtimePermissionsLauncher.launch(runtimePermissions.toTypedArray())
+            return
+        }
+
+        requestBackgroundLocation()
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -115,6 +141,7 @@ fun OnboardingScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(NetWatchBackground)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -186,6 +213,7 @@ fun OnboardingScreen(
             description = "Required for geotagging each transition and outage.",
             granted = permissions.fineLocationGranted,
             icon = Icons.Rounded.LocationOn,
+            onGrantClick = { singlePermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
         )
 
         PermissionItem(
@@ -193,6 +221,7 @@ fun OnboardingScreen(
             description = "Required to keep location tagging while app is not in foreground.",
             granted = permissions.backgroundLocationGranted,
             icon = Icons.Rounded.LocationOn,
+            onGrantClick = { requestBackgroundLocation() },
         )
 
         PermissionItem(
@@ -200,6 +229,7 @@ fun OnboardingScreen(
             description = "Required for carrier, SIM route, and LTE/5G signal telemetry.",
             granted = permissions.phoneStateGranted,
             icon = Icons.Rounded.PhoneAndroid,
+            onGrantClick = { singlePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE) },
         )
 
         PermissionItem(
@@ -207,6 +237,11 @@ fun OnboardingScreen(
             description = "Required to display persistent foreground monitoring status.",
             granted = permissions.notificationsGranted,
             icon = Icons.Rounded.Notifications,
+            onGrantClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    singlePermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            },
         )
 
         PermissionItem(
@@ -214,54 +249,16 @@ fun OnboardingScreen(
             description = "Enable Usage Access from system settings to improve data-integrity checks.",
             granted = permissions.usageAccessGranted,
             icon = Icons.Rounded.NetworkCell,
-            trailingAction = {
-                if (!permissions.usageAccessGranted) {
-                    TextButton(
-                        onClick = {
-                            runCatching {
-                                context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-                            }
-                        }
-                    ) {
-                        Text("Open")
-                    }
-                }
+            onGrantClick = {
+                showUsageAccessHint = true
+                openUsageAccessSettings(context)
             },
         )
 
         Button(
             onClick = {
-                showUsageAccessHint = false
-                if (permissions.allRequiredGranted) {
-                    onGrantAccess()
-                    return@Button
-                }
-
-                val runtimePermissions = buildList {
-                    if (!permissions.fineLocationGranted) {
-                        add(Manifest.permission.ACCESS_FINE_LOCATION)
-                    }
-                    if (!permissions.phoneStateGranted) {
-                        add(Manifest.permission.READ_PHONE_STATE)
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !permissions.notificationsGranted) {
-                        add(Manifest.permission.POST_NOTIFICATIONS)
-                    }
-                }
-
-                when {
-                    runtimePermissions.isNotEmpty() -> {
-                        runtimePermissionsLauncher.launch(runtimePermissions.toTypedArray())
-                    }
-
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !permissions.backgroundLocationGranted -> {
-                        backgroundLocationLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    }
-
-                    !permissions.usageAccessGranted -> {
-                        showUsageAccessHint = true
-                    }
-                }
+                showUsageAccessHint = !permissions.usageAccessGranted
+                requestRuntimePermissions()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -273,18 +270,40 @@ fun OnboardingScreen(
             shape = RoundedCornerShape(12.dp),
         ) {
             Text(
-                text = if (permissions.allRequiredGranted) "Start Monitoring" else "Grant Required Access",
+                text = "Request Runtime Permissions",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
             )
         }
 
-        if (showUsageAccessHint && !permissions.usageAccessGranted) {
+        Button(
+            onClick = onGrantAccess,
+            enabled = permissions.allRequiredGranted,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Text("Continue")
+        }
+
+        if (showBackgroundLocationHint && !permissions.backgroundLocationGranted) {
             Text(
-                text = "Usage Access is still disabled. Tap Open on the Usage Access row, grant NetWatch, then return here.",
+                text = "On Android 11+, Background Location must be enabled from App Settings. Open NetWatch settings and set Location to Allow all the time.",
                 color = NetWatchSecondaryText,
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
+                textAlign = TextAlign.Start,
+            )
+        }
+
+        if (showUsageAccessHint && !permissions.usageAccessGranted) {
+            Text(
+                text = "Usage Access is still disabled. Tap Grant on Usage Access, enable NetWatch in system settings, and return here.",
+                color = NetWatchSecondaryText,
+                fontSize = 13.sp,
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Start,
             )
         }
 
@@ -335,7 +354,7 @@ private fun PermissionItem(
     description: String,
     granted: Boolean,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    trailingAction: @Composable (() -> Unit)? = null,
+    onGrantClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -364,10 +383,17 @@ private fun PermissionItem(
             Text(text = description, color = NetWatchSecondaryText, fontSize = 14.sp)
         }
 
-        if (trailingAction != null) {
-            trailingAction()
+        if (granted) {
+            Text(
+                text = "Granted",
+                color = NetWatchAccent,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            )
         } else {
-            Switch(checked = granted, onCheckedChange = null, enabled = false)
+            TextButton(onClick = { onGrantClick?.invoke() }, enabled = onGrantClick != null) {
+                Text("Grant")
+            }
         }
     }
 }
@@ -448,4 +474,19 @@ private fun hasUsageAccess(context: Context): Boolean {
     }
 
     return false
+}
+
+private fun openUsageAccessSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    runCatching { context.startActivity(intent) }
+}
+
+private fun openAppDetailsSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.fromParts("package", context.packageName, null)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    runCatching { context.startActivity(intent) }
 }
