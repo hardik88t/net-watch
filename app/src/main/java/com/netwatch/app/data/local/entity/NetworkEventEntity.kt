@@ -22,4 +22,6 @@ data class NetworkEventEntity(
     val latitude: Double?,
     val longitude: Double?,
     val durationMs: Long?,
+    /** When true, this event is excluded from statistics calculations. */
+    val isException: Boolean = false,
 )

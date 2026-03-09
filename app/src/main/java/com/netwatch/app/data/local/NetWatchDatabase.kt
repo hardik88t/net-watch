@@ -22,7 +22,7 @@ import com.netwatch.app.data.local.entity.StateSnapshotEntity
         AnnotationEntity::class,
         NetworkProfileEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @TypeConverters(AppTypeConverters::class)
@@ -32,4 +32,12 @@ abstract class NetWatchDatabase : RoomDatabase() {
     abstract fun speedTestDao(): SpeedTestDao
     abstract fun annotationDao(): AnnotationDao
     abstract fun networkProfileDao(): NetworkProfileDao
+
+    companion object {
+        val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE network_events ADD COLUMN isException INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+    }
 }

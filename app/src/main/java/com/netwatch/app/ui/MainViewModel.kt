@@ -15,7 +15,7 @@ import com.netwatch.app.core.model.ConnectionSnapshot
 import com.netwatch.app.core.model.MonitoringConstraints
 import com.netwatch.app.core.model.SpeedTestResult
 import com.netwatch.app.core.model.TimelineItem
-import com.netwatch.app.core.model.WeeklyStats
+import com.netwatch.app.core.model.TimeScopedStats
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -61,18 +61,21 @@ class MainViewModel(
         initialValue = emptyList(),
     )
 
-    private val _weeklyStats = MutableStateFlow(
-        WeeklyStats(
+    private var currentStatsRangeDays: Int = 7
+
+    private val _timeScopedStats = MutableStateFlow(
+        TimeScopedStats(
             avgDownloadMbps = 0.0,
             avgUploadMbps = 0.0,
             avgLatencyMs = 0.0,
+            timeOnWifiMinutes = 0,
             timeOn5gMinutes = 0,
             timeOnLteMinutes = 0,
             timeOnLegacyMinutes = 0,
             switchFrequencyPerDay = 0.0,
         )
     )
-    val weeklyStats: StateFlow<WeeklyStats> = _weeklyStats
+    val timeScopedStats: StateFlow<TimeScopedStats> = _timeScopedStats
 
     private val _destination = MutableStateFlow(NetWatchDestination.DASHBOARD)
     val destination: StateFlow<NetWatchDestination> = _destination
@@ -244,10 +247,23 @@ class MainViewModel(
         }
     }
 
+    fun setStatsTimeRangeDays(days: Int) {
+        currentStatsRangeDays = days
+        viewModelScope.launch {
+            refreshStatsOnce()
+        }
+    }
+
+    private suspend fun refreshStatsOnce() {
+        val nowMs = System.currentTimeMillis()
+        val sinceMs = nowMs - (currentStatsRangeDays * 24L * 60 * 60 * 1000)
+        _timeScopedStats.value = monitoringRepository.timeScopedStats(sinceMs, nowMs)
+    }
+
     private fun refreshStatsLoop() {
         viewModelScope.launch {
             while (true) {
-                _weeklyStats.value = monitoringRepository.weeklyStats(System.currentTimeMillis())
+                refreshStatsOnce()
                 delay(60_000)
             }
         }

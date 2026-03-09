@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.netwatch.app.R
-import com.netwatch.app.core.model.WeeklyStats
+import com.netwatch.app.core.model.TimeScopedStats
 import com.netwatch.app.ui.theme.NetWatchAccent
 import com.netwatch.app.ui.theme.NetWatchBackground
 import com.netwatch.app.ui.theme.NetWatchDanger
@@ -48,12 +48,13 @@ import kotlin.math.max
 
 @Composable
 fun StatsReportsScreen(
-    weeklyStats: WeeklyStats,
+    timeScopedStats: TimeScopedStats,
     onExportFormatted: () -> Unit,
     onExportCsv: () -> Unit,
     onExportJson: () -> Unit,
     onExportPdf: () -> Unit,
     exportStatus: String?,
+    onTabSelected: (days: Int) -> Unit,
 ) {
     val tabs = listOf("Daily", "Weekly", "Monthly")
     var selectedTab by remember { mutableStateOf(1) }
@@ -89,7 +90,16 @@ fun StatsReportsScreen(
                             color = if (index == selectedTab) NetWatchAccent.copy(alpha = 0.22f) else NetWatchSurface,
                             shape = RoundedCornerShape(30.dp),
                         )
-                        .clickable { selectedTab = index },
+                        .clickable {
+                            selectedTab = index
+                            val days = when (index) {
+                                0 -> 1
+                                1 -> 7
+                                2 -> 30
+                                else -> 7
+                            }
+                            onTabSelected(days)
+                        },
                 ) {
                     Text(
                         text = tab,
@@ -105,31 +115,31 @@ fun StatsReportsScreen(
             }
         }
 
-        HealthBanner(weeklyStats = weeklyStats)
+        HealthBanner(stats = timeScopedStats)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             SummaryCard(
                 modifier = Modifier.weight(1f),
                 title = "Avg Download",
-                value = "${"%.1f".format(weeklyStats.avgDownloadMbps)} Mbps",
-                delta = if (weeklyStats.avgDownloadMbps > 40.0) "Strong" else "Low",
-                deltaPositive = weeklyStats.avgDownloadMbps > 40.0,
+                value = "${"%.1f".format(timeScopedStats.avgDownloadMbps)} Mbps",
+                delta = if (timeScopedStats.avgDownloadMbps > 40.0) "Strong" else "Low",
+                deltaPositive = timeScopedStats.avgDownloadMbps > 40.0,
                 icon = Icons.Rounded.Download,
             )
             SummaryCard(
                 modifier = Modifier.weight(1f),
                 title = "Avg Upload",
-                value = "${"%.1f".format(weeklyStats.avgUploadMbps)} Mbps",
-                delta = if (weeklyStats.avgUploadMbps > 15.0) "Healthy" else "Bottleneck",
-                deltaPositive = weeklyStats.avgUploadMbps > 15.0,
+                value = "${"%.1f".format(timeScopedStats.avgUploadMbps)} Mbps",
+                delta = if (timeScopedStats.avgUploadMbps > 15.0) "Healthy" else "Bottleneck",
+                deltaPositive = timeScopedStats.avgUploadMbps > 15.0,
                 icon = Icons.Rounded.Upload,
             )
         }
 
-        DistributionCard(weeklyStats = weeklyStats)
+        DistributionCard(stats = timeScopedStats)
 
-        InsightCard(title = "Signal Stability", subtitle = "Switch/day ${"%.2f".format(weeklyStats.switchFrequencyPerDay)}")
-        InsightCard(title = "Peak Performance", subtitle = "Latency ${"%.1f".format(weeklyStats.avgLatencyMs)} ms")
+        InsightCard(title = "Signal Stability", subtitle = "Switch/day ${"%.2f".format(timeScopedStats.switchFrequencyPerDay)}")
+        InsightCard(title = "Peak Performance", subtitle = "Latency ${"%.1f".format(timeScopedStats.avgLatencyMs)} ms")
         InsightCard(title = "Data Roaming", subtitle = "Export and compare profile usage")
 
         Button(
@@ -191,11 +201,11 @@ fun StatsReportsScreen(
 }
 
 @Composable
-private fun HealthBanner(weeklyStats: WeeklyStats) {
+private fun HealthBanner(stats: TimeScopedStats) {
     val score = (
-        (weeklyStats.avgDownloadMbps / 2.0) +
-            (weeklyStats.avgUploadMbps / 3.0) -
-            (weeklyStats.avgLatencyMs / 4.0)
+        (stats.avgDownloadMbps / 2.0) +
+            (stats.avgUploadMbps / 3.0) -
+            (stats.avgLatencyMs / 4.0)
         ).toInt().coerceIn(0, 100)
 
     Card(
@@ -256,15 +266,16 @@ private fun SummaryCard(
 }
 
 @Composable
-private fun DistributionCard(weeklyStats: WeeklyStats) {
-    val totalMinutes = weeklyStats.timeOn5gMinutes + weeklyStats.timeOnLteMinutes + weeklyStats.timeOnLegacyMinutes
-    val (p5g, plte, plegacy) = if (totalMinutes <= 0L) {
-        Triple(1f, 1f, 1f)
+private fun DistributionCard(stats: TimeScopedStats) {
+    val totalMinutes = stats.timeOnWifiMinutes + stats.timeOn5gMinutes + stats.timeOnLteMinutes + stats.timeOnLegacyMinutes
+    val (pwifi, p5g, plte, plegacy) = if (totalMinutes <= 0L) {
+        listOf(1f, 1f, 1f, 1f)
     } else {
-        Triple(
-            max(0.15f, weeklyStats.timeOn5gMinutes / totalMinutes.toFloat()),
-            max(0.15f, weeklyStats.timeOnLteMinutes / totalMinutes.toFloat()),
-            max(0.15f, weeklyStats.timeOnLegacyMinutes / totalMinutes.toFloat()),
+        listOf(
+            max(0.1f, stats.timeOnWifiMinutes / totalMinutes.toFloat()),
+            max(0.1f, stats.timeOn5gMinutes / totalMinutes.toFloat()),
+            max(0.1f, stats.timeOnLteMinutes / totalMinutes.toFloat()),
+            max(0.1f, stats.timeOnLegacyMinutes / totalMinutes.toFloat()),
         )
     }
 
@@ -278,9 +289,18 @@ private fun DistributionCard(weeklyStats: WeeklyStats) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Box(
                     modifier = Modifier
+                        .weight(pwifi)
+                        .height(72.dp)
+                        .background(NetWatchAccent, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    Text("Wi-Fi", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold)
+                }
+                Box(
+                    modifier = Modifier
                         .weight(p5g)
                         .height(72.dp)
-                        .background(NetWatchAccent.copy(alpha = 0.75f), RoundedCornerShape(8.dp)),
+                        .background(NetWatchAccent.copy(alpha = 0.7f), RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
                     Text("5G", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold)
@@ -289,7 +309,7 @@ private fun DistributionCard(weeklyStats: WeeklyStats) {
                     modifier = Modifier
                         .weight(plte)
                         .height(72.dp)
-                        .background(NetWatchAccent.copy(alpha = 0.4f), RoundedCornerShape(8.dp)),
+                        .background(NetWatchAccent.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
                     Text("LTE", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold)
@@ -301,13 +321,17 @@ private fun DistributionCard(weeklyStats: WeeklyStats) {
                         .background(NetWatchAccent.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
-                    Text("3G/2G", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold)
+                    Text("Legacy", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold)
                 }
             }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                MetricText("Total 5G Time", "${weeklyStats.timeOn5gMinutes}m")
-                MetricText("Switch Frequency", "${"%.2f".format(weeklyStats.switchFrequencyPerDay)} / day")
+                MetricText("Total Time Wi-Fi", "${stats.timeOnWifiMinutes}m")
+                MetricText("Total Time 5G", "${stats.timeOn5gMinutes}m")
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                MetricText("Total Time LTE", "${stats.timeOnLteMinutes}m")
+                MetricText("Total Time Legacy", "${stats.timeOnLegacyMinutes}m")
             }
         }
     }

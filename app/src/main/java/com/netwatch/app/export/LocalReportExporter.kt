@@ -24,7 +24,7 @@ class LocalReportExporter(
 
     override suspend fun exportFormattedReport(): File = withContext(Dispatchers.IO) {
         val now = System.currentTimeMillis()
-        val weekly = repository.weeklyStats(now)
+        val stats = repository.timeScopedStats(now - 7L * 24 * 60 * 60 * 1000, now)
         val timeline = repository.observeTimeline(limit = 200).first()
 
         val file = outputFile("report", "txt")
@@ -33,13 +33,14 @@ class LocalReportExporter(
             appendLine("Generated: ${format(now)}")
             appendLine()
             appendLine("Summary")
-            appendLine("- Avg Download: ${"%.2f".format(weekly.avgDownloadMbps)} Mbps")
-            appendLine("- Avg Upload: ${"%.2f".format(weekly.avgUploadMbps)} Mbps")
-            appendLine("- Avg Latency: ${"%.2f".format(weekly.avgLatencyMs)} ms")
-            appendLine("- 5G Minutes: ${weekly.timeOn5gMinutes}")
-            appendLine("- LTE Minutes: ${weekly.timeOnLteMinutes}")
-            appendLine("- Legacy Minutes: ${weekly.timeOnLegacyMinutes}")
-            appendLine("- Switch/day: ${"%.2f".format(weekly.switchFrequencyPerDay)}")
+            appendLine("- Avg Download: ${"%.2f".format(stats.avgDownloadMbps)} Mbps")
+            appendLine("- Avg Upload: ${"%.2f".format(stats.avgUploadMbps)} Mbps")
+            appendLine("- Avg Latency: ${"%.2f".format(stats.avgLatencyMs)} ms")
+            appendLine("- Wi-Fi Minutes: ${stats.timeOnWifiMinutes}")
+            appendLine("- 5G Minutes: ${stats.timeOn5gMinutes}")
+            appendLine("- LTE Minutes: ${stats.timeOnLteMinutes}")
+            appendLine("- Legacy Minutes: ${stats.timeOnLegacyMinutes}")
+            appendLine("- Switch/day: ${"%.2f".format(stats.switchFrequencyPerDay)}")
             appendLine()
             appendLine("Timeline")
             timeline.forEach { item ->
@@ -104,7 +105,7 @@ class LocalReportExporter(
 
     override suspend fun exportPdfReport(): File = withContext(Dispatchers.IO) {
         val now = System.currentTimeMillis()
-        val weekly = repository.weeklyStats(now)
+        val stats = repository.timeScopedStats(now - 7L * 24 * 60 * 60 * 1000, now)
         val timeline = repository.observeTimeline(limit = 200).first()
 
         val document = PdfDocument()
@@ -148,19 +149,21 @@ class LocalReportExporter(
 
         canvas.drawText("Summary", xMargin, yPos, headerPaint)
         yPos += 20f
-        canvas.drawText("- Avg Download: ${"%.2f".format(weekly.avgDownloadMbps)} Mbps", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- Avg Download: ${"%.2f".format(stats.avgDownloadMbps)} Mbps", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- Avg Upload: ${"%.2f".format(weekly.avgUploadMbps)} Mbps", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- Avg Upload: ${"%.2f".format(stats.avgUploadMbps)} Mbps", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- Avg Latency: ${"%.2f".format(weekly.avgLatencyMs)} ms", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- Avg Latency: ${"%.2f".format(stats.avgLatencyMs)} ms", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- 5G Minutes: ${weekly.timeOn5gMinutes}", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- Wi-Fi Minutes: ${stats.timeOnWifiMinutes}", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- LTE Minutes: ${weekly.timeOnLteMinutes}", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- 5G Minutes: ${stats.timeOn5gMinutes}", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- Legacy Minutes: ${weekly.timeOnLegacyMinutes}", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- LTE Minutes: ${stats.timeOnLteMinutes}", xMargin + 10, yPos, textPaint)
         yPos += 20f
-        canvas.drawText("- Switch/day: ${"%.2f".format(weekly.switchFrequencyPerDay)}", xMargin + 10, yPos, textPaint)
+        canvas.drawText("- Legacy Minutes: ${stats.timeOnLegacyMinutes}", xMargin + 10, yPos, textPaint)
+        yPos += 20f
+        canvas.drawText("- Switch/day: ${"%.2f".format(stats.switchFrequencyPerDay)}", xMargin + 10, yPos, textPaint)
         yPos += 40f
 
         canvas.drawText("Timeline Log", xMargin, yPos, headerPaint)

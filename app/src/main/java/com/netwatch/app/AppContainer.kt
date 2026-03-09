@@ -29,7 +29,10 @@ class AppContainer(
         appContext,
         NetWatchDatabase::class.java,
         "netwatch.db",
-    ).fallbackToDestructiveMigration().build()
+    )
+        .addMigrations(NetWatchDatabase.MIGRATION_1_2)
+        .fallbackToDestructiveMigration()
+        .build()
 
     val monitoringRepository = RoomMonitoringRepository(
         snapshotDao = database.stateSnapshotDao(),

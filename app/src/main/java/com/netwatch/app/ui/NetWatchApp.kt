@@ -49,7 +49,7 @@ fun NetWatchApp(
     val timeline by viewModel.timeline.collectAsStateWithLifecycle()
     val constraints by viewModel.constraints.collectAsStateWithLifecycle()
     val recentSpeedTests by viewModel.recentSpeedTests.collectAsStateWithLifecycle()
-    val weeklyStats by viewModel.weeklyStats.collectAsStateWithLifecycle()
+    val timeScopedStats by viewModel.timeScopedStats.collectAsStateWithLifecycle()
     val exportStatus by viewModel.exportStatus.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -111,12 +111,13 @@ fun NetWatchApp(
                 )
 
                 NetWatchDestination.STATS -> StatsReportsScreen(
-                    weeklyStats = weeklyStats,
+                    timeScopedStats = timeScopedStats,
                     onExportFormatted = viewModel::exportFormattedReport,
                     onExportCsv = viewModel::exportCsv,
                     onExportJson = viewModel::exportJson,
                     onExportPdf = viewModel::exportPdf,
                     exportStatus = exportStatus,
+                    onTabSelected = viewModel::setStatsTimeRangeDays,
                 )
 
                 NetWatchDestination.SETTINGS -> SettingsScreen(

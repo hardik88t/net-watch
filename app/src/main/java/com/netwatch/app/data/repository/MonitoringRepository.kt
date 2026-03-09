@@ -5,7 +5,7 @@ import com.netwatch.app.core.model.NetworkEvent
 import com.netwatch.app.core.model.NetworkProfile
 import com.netwatch.app.core.model.SpeedTestResult
 import com.netwatch.app.core.model.TimelineItem
-import com.netwatch.app.core.model.WeeklyStats
+import com.netwatch.app.core.model.TimeScopedStats
 import kotlinx.coroutines.flow.Flow
 
 interface MonitoringRepository {
@@ -14,9 +14,11 @@ interface MonitoringRepository {
     suspend fun logSpeedTest(result: SpeedTestResult)
     suspend fun upsertProfile(profile: NetworkProfile, seenAtMs: Long)
     suspend fun addAnnotation(eventId: Long?, timestampMs: Long, text: String)
+    suspend fun setEventException(eventId: Long, isException: Boolean)
+    suspend fun deleteEvent(eventId: Long)
 
     fun observeLatestSnapshot(): Flow<ConnectionSnapshot?>
-    fun observeTimeline(limit: Int = 200): Flow<List<TimelineItem>>
+    fun observeTimeline(limit: Int = 200, includeExceptions: Boolean = false): Flow<List<TimelineItem>>
     fun observeRecentSpeedTests(limit: Int = 10): Flow<List<SpeedTestResult>>
-    suspend fun weeklyStats(nowMs: Long): WeeklyStats
+    suspend fun timeScopedStats(sinceMs: Long, nowMs: Long): TimeScopedStats
 }

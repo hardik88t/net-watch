@@ -94,7 +94,7 @@ class RoomMonitoringRepositoryTest {
     }
 
     @Test
-    fun weeklyStats_preciseMillisecondFidelity() = runTest {
+    fun timeScopedStats_preciseMillisecondFidelity() = runTest {
         val nowMs = System.currentTimeMillis()
         val oneHourMs = 60 * 60 * 1000L
         val sinceMs = nowMs - oneHourMs
@@ -145,7 +145,7 @@ class RoomMonitoringRepositoryTest {
         coEvery { speedTestDao.averageUploadSince(any()) } returns 0.0
         coEvery { speedTestDao.averageLatencySince(any()) } returns 0.0
 
-        val stats = repository.weeklyStats(nowMs)
+        val stats = repository.timeScopedStats(nowMs - (7L * 24 * 60 * 60 * 1000), nowMs)
 
         // 5G duration = snap2Time - snap1Time = 30500 ms = 0.508333 minutes
         // LTE duration = nowMs - snap2Time = 15200 ms = 0.25333 minutes
@@ -206,7 +206,7 @@ class RoomMonitoringRepositoryTest {
         )
         
         coEvery { snapshotDao.getSince(any()) } returns largeSnapshots
-        val largeStats = repository.weeklyStats(nowMs)
+        val largeStats = repository.timeScopedStats(nowMs - (7L * 24 * 60 * 60 * 1000), nowMs)
 
         // 5G time = 30500 ms. LTE time = 105200. Total 5G = 30500. Total LTE = 105200.
         // Assuming Double division is used inside weeklyStats, or if it isn't we can see the exact result.
