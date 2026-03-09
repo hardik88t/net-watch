@@ -4,7 +4,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.devtools.ksp")
 }
-
 android {
     namespace = "com.netwatch.app"
     compileSdk = 35
@@ -17,6 +16,10 @@ android {
         versionName = providers.gradleProperty("NETWATCH_VERSION_NAME").orNull ?: "0.2.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    installation {
+        installOptions.addAll(listOf("-g", "-r"))
     }
 
     buildTypes {

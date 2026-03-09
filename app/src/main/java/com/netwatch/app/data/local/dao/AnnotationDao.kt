@@ -12,6 +12,9 @@ interface AnnotationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(annotation: AnnotationEntity): Long
 
+    @Query("DELETE FROM annotations WHERE eventId = :eventId")
+    suspend fun deleteForEvent(eventId: Long)
+
     @Query("SELECT * FROM annotations WHERE eventId = :eventId ORDER BY timestampMs DESC")
     fun observeForEvent(eventId: Long): Flow<List<AnnotationEntity>>
 

@@ -17,9 +17,12 @@ import com.netwatch.app.core.model.SpeedTestResult
 import com.netwatch.app.core.model.TimelineItem
 import com.netwatch.app.core.model.TimeScopedStats
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -61,7 +64,8 @@ class MainViewModel(
         initialValue = emptyList(),
     )
 
-    private var currentStatsRangeDays: Int = 7
+    private val _statsTimeRangeDays = MutableStateFlow(7)
+    val statsTimeRangeDays: StateFlow<Int> = _statsTimeRangeDays
 
     private val _timeScopedStats = MutableStateFlow(
         TimeScopedStats(
@@ -80,8 +84,11 @@ class MainViewModel(
     private val _destination = MutableStateFlow(NetWatchDestination.DASHBOARD)
     val destination: StateFlow<NetWatchDestination> = _destination
 
-    private val _exportStatus = MutableStateFlow<String?>(null)
-    val exportStatus: StateFlow<String?> = _exportStatus
+    private val _exportFileEvent = MutableSharedFlow<java.io.File>()
+    val exportFileEvent: SharedFlow<java.io.File> = _exportFileEvent.asSharedFlow()
+
+    private val _isTestRunning = MutableStateFlow(false)
+    val isTestRunning: StateFlow<Boolean> = _isTestRunning
 
     val monitoringEnabledLabel: StateFlow<String> = constraints.map { prefs ->
         if (prefs.monitoringEnabled) "Monitoring active" else "Monitoring paused"
@@ -125,6 +132,22 @@ class MainViewModel(
     fun requestManualSpeedTest() {
         val app = getApplication<Application>()
         ContextCompat.startForegroundService(app, NetWatchMonitorService.manualTestIntent(app))
+        
+        viewModelScope.launch {
+            if (_isTestRunning.value) return@launch
+            _isTestRunning.value = true
+            
+            val initialCount = recentSpeedTests.value.size
+            var elapsed = 0
+            while (_isTestRunning.value && elapsed < 15000) {
+                delay(500)
+                elapsed += 500
+                if (recentSpeedTests.value.size > initialCount) {
+                    _isTestRunning.value = false
+                }
+            }
+            _isTestRunning.value = false
+        }
     }
 
     fun addAnnotation(eventId: Long?, note: String) {
@@ -134,6 +157,24 @@ class MainViewModel(
                 timestampMs = System.currentTimeMillis(),
                 text = note,
             )
+        }
+    }
+
+    fun deleteAnnotation(eventId: Long) {
+        viewModelScope.launch {
+            monitoringRepository.deleteAnnotation(eventId)
+        }
+    }
+
+    fun deleteEvent(eventId: Long) {
+        viewModelScope.launch {
+            monitoringRepository.deleteEvent(eventId)
+        }
+    }
+
+    fun markEventAsException(eventId: Long, isException: Boolean) {
+        viewModelScope.launch {
+            monitoringRepository.setEventException(eventId, isException)
         }
     }
 
@@ -203,52 +244,42 @@ class MainViewModel(
         }
     }
 
-    fun setMapOfflineMinZoom(value: Int) {
+    fun setGlobalFontSize(size: String) {
         viewModelScope.launch {
-            preferencesRepository.setMapOfflineMinZoom(value)
-        }
-    }
-
-    fun setMapOfflineMaxZoom(value: Int) {
-        viewModelScope.launch {
-            preferencesRepository.setMapOfflineMaxZoom(value)
+            preferencesRepository.setGlobalFontSize(size)
         }
     }
 
     fun exportFormattedReport() {
         viewModelScope.launch {
             runCatching { reportExporter.exportFormattedReport() }
-                .onSuccess { file -> _exportStatus.value = "Formatted report: ${file.absolutePath}" }
-                .onFailure { error -> _exportStatus.value = "Export failed: ${error.message}" }
+                .onSuccess { file -> _exportFileEvent.emit(file) }
         }
     }
 
     fun exportCsv() {
         viewModelScope.launch {
             runCatching { reportExporter.exportRawCsv() }
-                .onSuccess { file -> _exportStatus.value = "CSV export: ${file.absolutePath}" }
-                .onFailure { error -> _exportStatus.value = "Export failed: ${error.message}" }
+                .onSuccess { file -> _exportFileEvent.emit(file) }
         }
     }
 
     fun exportJson() {
         viewModelScope.launch {
             runCatching { reportExporter.exportRawJson() }
-                .onSuccess { file -> _exportStatus.value = "JSON export: ${file.absolutePath}" }
-                .onFailure { error -> _exportStatus.value = "Export failed: ${error.message}" }
+                .onSuccess { file -> _exportFileEvent.emit(file) }
         }
     }
 
     fun exportPdf() {
         viewModelScope.launch {
             runCatching { reportExporter.exportPdfReport() }
-                .onSuccess { file -> _exportStatus.value = "PDF export: ${file.absolutePath}" }
-                .onFailure { error -> _exportStatus.value = "Export failed: ${error.message}" }
+                .onSuccess { file -> _exportFileEvent.emit(file) }
         }
     }
 
     fun setStatsTimeRangeDays(days: Int) {
-        currentStatsRangeDays = days
+        _statsTimeRangeDays.value = days
         viewModelScope.launch {
             refreshStatsOnce()
         }
@@ -256,7 +287,7 @@ class MainViewModel(
 
     private suspend fun refreshStatsOnce() {
         val nowMs = System.currentTimeMillis()
-        val sinceMs = nowMs - (currentStatsRangeDays * 24L * 60 * 60 * 1000)
+        val sinceMs = nowMs - (_statsTimeRangeDays.value * 24L * 60 * 60 * 1000)
         _timeScopedStats.value = monitoringRepository.timeScopedStats(sinceMs, nowMs)
     }
 

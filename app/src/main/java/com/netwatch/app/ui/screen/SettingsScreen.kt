@@ -18,13 +18,24 @@ import androidx.compose.material.icons.rounded.DataUsage
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.SettingsSuggest
-import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,6 +50,7 @@ import com.netwatch.app.ui.theme.NetWatchPrimaryText
 import com.netwatch.app.ui.theme.NetWatchSecondaryText
 import com.netwatch.app.ui.theme.NetWatchSurface
 
+@androidx.compose.material3.ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
     constraints: MonitoringConstraints,
@@ -54,9 +66,10 @@ fun SettingsScreen(
     onDeadAirToggle: (Boolean) -> Unit,
     onCompactTimelineModeToggle: (Boolean) -> Unit,
     onMapAutoCenterToggle: (Boolean) -> Unit,
-    onMapOfflineMinZoomChange: (Int) -> Unit,
-    onMapOfflineMaxZoomChange: (Int) -> Unit,
+    onGlobalFontSizeChange: (String) -> Unit,
+    onStartHeavyTest: () -> Unit,
 ) {
+    var showHeavyTestWarning by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -185,6 +198,26 @@ fun SettingsScreen(
 
         SectionTitle("Personalization")
 
+        val fontOptions = listOf("Small", "Base", "Big")
+        val fontSelectedIndex = fontOptions.indexOf(constraints.globalFontSize).takeIf { it >= 0 } ?: 1
+
+        Card(colors = CardDefaults.cardColors(containerColor = NetWatchSurface), shape = RoundedCornerShape(12.dp)) {
+            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Global Font Size", color = NetWatchPrimaryText, fontWeight = FontWeight.SemiBold)
+                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                    fontOptions.forEachIndexed { index, label ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = fontOptions.size),
+                            onClick = { onGlobalFontSizeChange(label) },
+                            selected = index == fontSelectedIndex
+                        ) {
+                            Text(label)
+                        }
+                    }
+                }
+            }
+        }
+
         ToggleCard(
             title = "Compact timeline cards",
             description = "Use denser timeline cards for faster scanning",
@@ -201,24 +234,43 @@ fun SettingsScreen(
             icon = Icons.Rounded.Map,
         )
 
-        SliderCard(
-            label = "Offline map min zoom",
-            value = constraints.mapOfflineMinZoom.toFloat(),
-            valueRange = 8f..16f,
-            steps = 7,
-            valueSuffix = "z",
-            onValueChange = { onMapOfflineMinZoomChange(it.toInt().coerceAtMost(constraints.mapOfflineMaxZoom)) },
-            icon = Icons.Rounded.Map,
-        )
+        SectionTitle("Diagnostics")
 
-        SliderCard(
-            label = "Offline map max zoom",
-            value = constraints.mapOfflineMaxZoom.toFloat(),
-            valueRange = 10f..18f,
-            steps = 7,
-            valueSuffix = "z",
-            onValueChange = { onMapOfflineMaxZoomChange(it.toInt().coerceAtLeast(constraints.mapOfflineMinZoom)) },
-            icon = Icons.Rounded.Map,
+        Button(
+            onClick = {
+                if (!constraints.monitoringEnabled) {
+                    showHeavyTestWarning = true
+                } else {
+                    onStartHeavyTest()
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = NetWatchAccent, contentColor = NetWatchBackground),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Start Heavy Test Now", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+        }
+
+    }
+
+    if (showHeavyTestWarning) {
+        AlertDialog(
+            onDismissRequest = { showHeavyTestWarning = false },
+            title = { Text("Monitoring Paused") },
+            text = { Text("Passive monitoring is currently paused. Are you sure you still want to run a heavy performance test?") },
+            confirmButton = {
+                Button(onClick = {
+                    showHeavyTestWarning = false
+                    onStartHeavyTest()
+                }) {
+                    Text("Run Anyway")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showHeavyTestWarning = false }) {
+                    Text("Cancel")
+                }
+            }
         )
     }
 }

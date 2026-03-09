@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.SignalCellularAlt
@@ -27,11 +28,15 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,19 +63,32 @@ import java.util.Locale
 fun TimelineScreen(
     items: List<TimelineItem>,
     onAddNote: (Long?, String) -> Unit,
+    onDeleteNote: (Long) -> Unit,
+    onDeleteEvent: (Long) -> Unit,
+    onMarkException: (Long, Boolean) -> Unit,
     compactMode: Boolean,
 ) {
     var noteDialogItem by remember { mutableStateOf<TimelineItem?>(null) }
     var selectedFilter by remember { mutableStateOf(TimelineFilter.ALL) }
+    var searchQuery by remember { mutableStateOf("") }
+    var filtersVisible by remember { mutableStateOf(false) }
 
-    val filteredItems = remember(items, selectedFilter) {
+    val filteredItems = remember(items, selectedFilter, searchQuery) {
         items.filter { timelineItem ->
-            when (selectedFilter) {
+            val matchesFilter = when (selectedFilter) {
                 TimelineFilter.ALL -> true
                 TimelineFilter.OUTAGES -> timelineItem.event.type == NetworkEventType.OUTAGE_START || timelineItem.event.type == NetworkEventType.OUTAGE_END
                 TimelineFilter.SPEED_TESTS -> timelineItem.event.type == NetworkEventType.SPEED_TEST
                 TimelineFilter.ANOMALIES -> timelineItem.event.type == NetworkEventType.ANOMALY
             }
+            val matchesSearch = if (searchQuery.isBlank()) {
+                true
+            } else {
+                timelineItem.event.message.contains(searchQuery, ignoreCase = true) ||
+                        timelineItem.event.type.name.contains(searchQuery, ignoreCase = true) ||
+                        (timelineItem.note?.contains(searchQuery, ignoreCase = true) == true)
+            }
+            matchesFilter && matchesSearch
         }
     }
 
@@ -102,19 +120,38 @@ fun TimelineScreen(
                 color = NetWatchAccent,
                 fontWeight = FontWeight.Bold,
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.Tune, contentDescription = null, tint = NetWatchSecondaryText)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { filtersVisible = !filtersVisible }
+            ) {
+                Icon(Icons.Rounded.Tune, contentDescription = null, tint = if (filtersVisible) NetWatchAccent else NetWatchSecondaryText)
                 Text(
                     text = "Filters",
-                    color = NetWatchSecondaryText,
+                    color = if (filtersVisible) NetWatchAccent else NetWatchSecondaryText,
                     modifier = Modifier.padding(start = 4.dp),
                     fontSize = 12.sp,
                 )
             }
         }
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(TimelineFilter.entries) { filter ->
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("Search logs or notes...", color = NetWatchSecondaryText) },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = NetWatchSurface,
+                unfocusedContainerColor = NetWatchSurface,
+                focusedBorderColor = NetWatchAccent,
+                unfocusedBorderColor = Color.Transparent,
+            )
+        )
+
+        if (filtersVisible) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(TimelineFilter.entries) { filter ->
                 val selected = filter == selectedFilter
                 Card(
                     colors = CardDefaults.cardColors(
@@ -132,6 +169,7 @@ fun TimelineScreen(
                     )
                 }
             }
+        }
         }
 
         if (filteredItems.isEmpty()) {
@@ -170,6 +208,9 @@ fun TimelineScreen(
                         item = item,
                         compactMode = compactMode,
                         onAddNote = { noteDialogItem = item },
+                        onDeleteNote = { onDeleteNote(item.event.id) },
+                        onDeleteEvent = { onDeleteEvent(item.event.id) },
+                        onMarkException = { onMarkException(item.event.id, true) },
                     )
                 }
             }
@@ -191,8 +232,12 @@ private fun TimelineItemCard(
     item: TimelineItem,
     compactMode: Boolean,
     onAddNote: () -> Unit,
+    onDeleteNote: () -> Unit,
+    onDeleteEvent: () -> Unit,
+    onMarkException: () -> Unit,
 ) {
     val event = item.event
+    var menuExpanded by remember { mutableStateOf(false) }
     val formatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US) }
 
     val statusColor = when (event.type) {
@@ -252,11 +297,58 @@ private fun TimelineItemCard(
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
 
-                androidx.compose.material3.IconButton(
-                    onClick = onAddNote,
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(Icons.Rounded.Edit, contentDescription = "Annotate", tint = NetWatchSecondaryText, modifier = Modifier.size(16.dp))
+                androidx.compose.foundation.layout.Box {
+                    androidx.compose.material3.IconButton(
+                        onClick = { menuExpanded = true },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Rounded.MoreVert, contentDescription = "Options", tint = NetWatchSecondaryText, modifier = Modifier.size(20.dp))
+                    }
+
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        if (item.note == null) {
+                            DropdownMenuItem(
+                                text = { Text("Add Note", color = NetWatchPrimaryText) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onAddNote()
+                                }
+                            )
+                        } else {
+                            DropdownMenuItem(
+                                text = { Text("Edit Note", color = NetWatchPrimaryText) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onAddNote()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete Note", color = NetWatchDanger) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onDeleteNote()
+                                }
+                            )
+                        }
+                        androidx.compose.material3.HorizontalDivider(color = NetWatchSecondaryText.copy(alpha = 0.2f))
+                        DropdownMenuItem(
+                            text = { Text("Mark Exception", color = NetWatchPrimaryText) },
+                            onClick = {
+                                menuExpanded = false
+                                onMarkException()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete Event", color = NetWatchDanger) },
+                            onClick = {
+                                menuExpanded = false
+                                onDeleteEvent()
+                            }
+                        )
+                    }
                 }
             }
 

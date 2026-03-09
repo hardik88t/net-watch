@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.netwatch.app.core.model.MonitoringConstraints
 import kotlinx.coroutines.flow.Flow
@@ -30,11 +31,10 @@ class DataStorePreferencesRepository(
             triggerOnSignalDrop = prefs[Keys.triggerOnSignalDrop] ?: true,
             signalDropThresholdDbm = prefs[Keys.signalDropThresholdDbm] ?: 20,
             triggerOnTechDowngrade = prefs[Keys.triggerOnTechDowngrade] ?: true,
-            triggerOnDeadAir = prefs[Keys.triggerOnDeadAir] ?: true,
-            compactTimelineMode = prefs[Keys.compactTimelineMode] ?: false,
-            mapAutoCenter = prefs[Keys.mapAutoCenter] ?: true,
-            mapOfflineMinZoom = prefs[Keys.mapOfflineMinZoom] ?: 11,
-            mapOfflineMaxZoom = prefs[Keys.mapOfflineMaxZoom] ?: 15,
+            triggerOnDeadAir = prefs[Keys.TRIGGER_DEAD_AIR] ?: true,
+            compactTimelineMode = prefs[Keys.COMPACT_TIMELINE] ?: false,
+            mapAutoCenter = prefs[Keys.MAP_AUTO_CENTER] ?: true,
+            globalFontSize = prefs[Keys.GLOBAL_FONT_SIZE] ?: "Base",
         )
     }
 
@@ -51,11 +51,16 @@ class DataStorePreferencesRepository(
     override suspend fun setTriggerOnSignalDrop(enabled: Boolean) = store.write(Keys.triggerOnSignalDrop, enabled)
     override suspend fun setSignalDropThresholdDbm(value: Int) = store.write(Keys.signalDropThresholdDbm, value)
     override suspend fun setTriggerOnTechDowngrade(enabled: Boolean) = store.write(Keys.triggerOnTechDowngrade, enabled)
-    override suspend fun setTriggerOnDeadAir(enabled: Boolean) = store.write(Keys.triggerOnDeadAir, enabled)
-    override suspend fun setCompactTimelineMode(enabled: Boolean) = store.write(Keys.compactTimelineMode, enabled)
-    override suspend fun setMapAutoCenter(enabled: Boolean) = store.write(Keys.mapAutoCenter, enabled)
-    override suspend fun setMapOfflineMinZoom(value: Int) = store.write(Keys.mapOfflineMinZoom, value)
-    override suspend fun setMapOfflineMaxZoom(value: Int) = store.write(Keys.mapOfflineMaxZoom, value)
+    override suspend fun setTriggerOnDeadAir(enabled: Boolean) = store.write(Keys.TRIGGER_DEAD_AIR, enabled)
+    override suspend fun setCompactTimelineMode(enabled: Boolean) = store.write(Keys.COMPACT_TIMELINE, enabled)
+    override suspend fun setMapAutoCenter(enabled: Boolean) {
+        store.edit { prefs -> prefs[Keys.MAP_AUTO_CENTER] = enabled }
+    }
+
+    override suspend fun setGlobalFontSize(size: String) {
+        store.edit { prefs -> prefs[Keys.GLOBAL_FONT_SIZE] = size }
+    }
+
     override suspend fun setOnboardingCompleted(completed: Boolean) = store.write(Keys.onboardingCompleted, completed)
 
     private suspend fun <T> DataStore<Preferences>.write(key: Preferences.Key<T>, value: T) {
@@ -74,11 +79,10 @@ class DataStorePreferencesRepository(
         val triggerOnSignalDrop = booleanPreferencesKey("trigger_on_signal_drop")
         val signalDropThresholdDbm = intPreferencesKey("signal_drop_threshold_dbm")
         val triggerOnTechDowngrade = booleanPreferencesKey("trigger_on_tech_downgrade")
-        val triggerOnDeadAir = booleanPreferencesKey("trigger_on_dead_air")
-        val compactTimelineMode = booleanPreferencesKey("compact_timeline_mode")
-        val mapAutoCenter = booleanPreferencesKey("map_auto_center")
-        val mapOfflineMinZoom = intPreferencesKey("map_offline_min_zoom")
-        val mapOfflineMaxZoom = intPreferencesKey("map_offline_max_zoom")
+        val TRIGGER_DEAD_AIR = booleanPreferencesKey("trigger_dead_air")
+        val COMPACT_TIMELINE = booleanPreferencesKey("compact_timeline")
+        val MAP_AUTO_CENTER = booleanPreferencesKey("map_auto_center")
+        val GLOBAL_FONT_SIZE = stringPreferencesKey("global_font_size")
         val onboardingCompleted = booleanPreferencesKey("onboarding_completed")
     }
 }

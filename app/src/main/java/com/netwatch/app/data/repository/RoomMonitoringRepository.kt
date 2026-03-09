@@ -149,6 +149,9 @@ class RoomMonitoringRepository(
     }
 
     override suspend fun addAnnotation(eventId: Long?, timestampMs: Long, text: String) {
+        if (eventId != null) {
+            annotationDao.deleteForEvent(eventId)
+        }
         annotationDao.insert(
             AnnotationEntity(
                 eventId = eventId,
@@ -156,6 +159,10 @@ class RoomMonitoringRepository(
                 text = text,
             )
         )
+    }
+
+    override suspend fun deleteAnnotation(eventId: Long) {
+        annotationDao.deleteForEvent(eventId)
     }
 
     override suspend fun setEventException(eventId: Long, isException: Boolean) {

@@ -13,6 +13,5 @@ data class MonitoringConstraints(
     val triggerOnDeadAir: Boolean = true,
     val compactTimelineMode: Boolean = false,
     val mapAutoCenter: Boolean = true,
-    val mapOfflineMinZoom: Int = 11,
-    val mapOfflineMaxZoom: Int = 15,
+    val globalFontSize: String = "Base",
 )

@@ -14,6 +14,7 @@ interface MonitoringRepository {
     suspend fun logSpeedTest(result: SpeedTestResult)
     suspend fun upsertProfile(profile: NetworkProfile, seenAtMs: Long)
     suspend fun addAnnotation(eventId: Long?, timestampMs: Long, text: String)
+    suspend fun deleteAnnotation(eventId: Long)
     suspend fun setEventException(eventId: Long, isException: Boolean)
     suspend fun deleteEvent(eventId: Long)
 

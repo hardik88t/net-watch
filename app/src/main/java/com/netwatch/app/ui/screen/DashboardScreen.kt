@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -56,6 +57,7 @@ fun DashboardScreen(
     snapshot: ConnectionSnapshot?,
     speedTests: List<SpeedTestResult>,
     monitoringEnabled: Boolean,
+    isTestRunning: Boolean,
     onToggleMonitoring: (Boolean) -> Unit,
     onQuickTest: () -> Unit,
 ) {
@@ -136,7 +138,7 @@ fun DashboardScreen(
         SignalStabilityCard(speedTests = speedTests)
 
         Button(
-            onClick = onQuickTest,
+            onClick = { if (!isTestRunning) onQuickTest() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(58.dp),
@@ -146,12 +148,25 @@ fun DashboardScreen(
                 contentColor = NetWatchBackground,
             ),
         ) {
-            Icon(Icons.Rounded.Bolt, contentDescription = null)
-            Text(
-                text = "  Quick Test Now",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-            )
+            if (isTestRunning) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = NetWatchBackground,
+                    strokeWidth = 3.dp
+                )
+                Text(
+                    text = "  Testing Network...",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                )
+            } else {
+                Icon(Icons.Rounded.Bolt, contentDescription = null)
+                Text(
+                    text = "  Quick Test Now",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                )
+            }
         }
     }
 }

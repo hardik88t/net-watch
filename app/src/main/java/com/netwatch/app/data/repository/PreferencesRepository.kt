@@ -18,8 +18,7 @@ interface PreferencesRepository {
     suspend fun setTriggerOnDeadAir(enabled: Boolean)
     suspend fun setCompactTimelineMode(enabled: Boolean)
     suspend fun setMapAutoCenter(enabled: Boolean)
-    suspend fun setMapOfflineMinZoom(value: Int)
-    suspend fun setMapOfflineMaxZoom(value: Int)
+    suspend fun setGlobalFontSize(size: String)
     suspend fun setOnboardingCompleted(completed: Boolean)
     val onboardingCompleted: Flow<Boolean>
 }

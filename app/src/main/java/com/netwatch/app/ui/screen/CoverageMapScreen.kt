@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,7 +66,6 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
-import org.osmdroid.tileprovider.cachemanager.CacheManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -74,8 +74,6 @@ import java.util.Locale
 fun CoverageMapScreen(
     timeline: List<TimelineItem>,
     autoCenter: Boolean,
-    offlineMinZoom: Int,
-    offlineMaxZoom: Int,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -83,7 +81,6 @@ fun CoverageMapScreen(
     var mapView by remember { mutableStateOf<MapView?>(null) }
     var selectedLayer by rememberSaveable { mutableStateOf(MapLayerFilter.ALL) }
     var showRouteLine by rememberSaveable { mutableStateOf(true) }
-    var offlineStatus by remember { mutableStateOf<String?>(null) }
     var hasCentered by remember { mutableStateOf(false) }
     var locationPermissionGranted by remember { mutableStateOf(hasLocationPermission(context)) }
 
@@ -130,6 +127,16 @@ fun CoverageMapScreen(
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    androidx.compose.runtime.LaunchedEffect(mapView, filteredPoints, showRouteLine) {
+        mapView?.let { view ->
+            renderMapOverlays(view, filteredPoints, showRouteLine)
+            if (autoCenter && filteredPoints.isNotEmpty() && !hasCentered) {
+                centerMapToPoints(view, filteredPoints)
+                hasCentered = true
+            }
+        }
     }
 
     LazyColumn(
@@ -199,34 +206,11 @@ fun CoverageMapScreen(
             Card(
                 colors = CardDefaults.cardColors(containerColor = NetWatchSurface),
                 shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.fillMaxWidth().height(320.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Rounded.Route, contentDescription = null, tint = NetWatchAccent)
-                            Text(
-                                text = "Route layer",
-                                color = NetWatchSecondaryText,
-                                modifier = Modifier.padding(start = 6.dp),
-                                fontSize = 12.sp,
-                            )
-                        }
-                        Switch(checked = showRouteLine, onCheckedChange = { showRouteLine = it })
-                    }
-
+                Box(modifier = Modifier.fillMaxSize()) {
                     AndroidView(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp),
+                        modifier = Modifier.fillMaxSize(),
                         factory = { viewContext ->
                             MapView(viewContext).apply {
                                 setTileSource(TileSourceFactory.MAPNIK)
@@ -239,56 +223,50 @@ fun CoverageMapScreen(
                         },
                         update = { view ->
                             mapView = view
-                            renderMapOverlays(view, filteredPoints, showRouteLine)
-                            if (autoCenter && filteredPoints.isNotEmpty() && !hasCentered) {
-                                centerMapToPoints(view, filteredPoints)
-                                hasCentered = true
-                            }
                         },
                     )
-                }
-            }
-        }
 
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (mapView == null) {
-                            offlineStatus = "Map not ready yet."
-                            return@Button
+                    // Floating Route Toggle
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = NetWatchSurface.copy(alpha = 0.9f)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(Icons.Rounded.Route, contentDescription = null, tint = NetWatchAccent, modifier = Modifier.size(16.dp))
+                            Text(
+                                text = "Route",
+                                color = NetWatchPrimaryText,
+                                fontSize = 12.sp,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                            )
+                            Switch(
+                                checked = showRouteLine,
+                                onCheckedChange = { showRouteLine = it },
+                                modifier = Modifier.padding(start = 4.dp).height(32.dp)
+                            )
                         }
-                        cacheVisibleArea(
-                            mapView = requireNotNull(mapView),
-                            minZoom = offlineMinZoom,
-                            maxZoom = offlineMaxZoom,
-                            onStatus = { offlineStatus = it },
-                        )
-                    },
-                ) {
-                    Icon(Icons.Rounded.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text("  Save Area Offline")
-                }
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        mapView?.let { centerMapToPoints(it, filteredPoints) }
-                    },
-                ) {
-                    Icon(Icons.Rounded.MyLocation, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Text("  Recenter")
-                }
-            }
-        }
+                    }
 
-        offlineStatus?.let { status ->
-            item {
-                Text(
-                    text = status,
-                    color = NetWatchSecondaryText,
-                    fontSize = 12.sp,
-                )
+                    // Floating Recenter Button
+                    androidx.compose.material3.FloatingActionButton(
+                        onClick = { mapView?.let { centerMapToPoints(it, filteredPoints) } },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                            .size(48.dp),
+                        containerColor = NetWatchSurface.copy(alpha = 0.9f),
+                        contentColor = NetWatchAccent
+                    ) {
+                        Icon(Icons.Rounded.MyLocation, contentDescription = "Recenter Map")
+                    }
+                }
             }
         }
 
@@ -402,44 +380,7 @@ private fun centerMapToPoints(
     mapView.zoomToBoundingBox(BoundingBox(maxLat, maxLon, minLat, minLon), true)
 }
 
-private fun cacheVisibleArea(
-    mapView: MapView,
-    minZoom: Int,
-    maxZoom: Int,
-    onStatus: (String) -> Unit,
-) {
-    val safeMin = minZoom.coerceAtLeast(6)
-    val safeMax = maxZoom.coerceAtMost(18).coerceAtLeast(safeMin)
-    val bbox = mapView.boundingBox
 
-    CacheManager(mapView).downloadAreaAsync(
-        mapView.context,
-        bbox,
-        safeMin,
-        safeMax,
-        object : CacheManager.CacheManagerCallback {
-            override fun updateProgress(progress: Int, currentZoomLevel: Int, zoomMin: Int, zoomMax: Int) {
-                onStatus("Caching $progress% (zoom $currentZoomLevel)")
-            }
-
-            override fun downloadStarted() {
-                onStatus("Offline tile download started")
-            }
-
-            override fun setPossibleTilesInArea(total: Int) {
-                onStatus("Preparing $total tiles for offline cache")
-            }
-
-            override fun onTaskComplete() {
-                onStatus("Offline map area saved")
-            }
-
-            override fun onTaskFailed(errors: Int) {
-                onStatus("Offline map save failed ($errors)")
-            }
-        },
-    )
-}
 
 private fun hasLocationPermission(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

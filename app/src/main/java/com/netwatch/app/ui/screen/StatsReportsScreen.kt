@@ -49,15 +49,19 @@ import kotlin.math.max
 @Composable
 fun StatsReportsScreen(
     timeScopedStats: TimeScopedStats,
+    statsTimeRangeDays: Int, // e.g. 1, 7, 30
     onExportFormatted: () -> Unit,
     onExportCsv: () -> Unit,
     onExportJson: () -> Unit,
     onExportPdf: () -> Unit,
-    exportStatus: String?,
     onTabSelected: (days: Int) -> Unit,
 ) {
     val tabs = listOf("Daily", "Weekly", "Monthly")
-    var selectedTab by remember { mutableStateOf(1) }
+    val selectedTab = when (statsTimeRangeDays) {
+        1 -> 0
+        30 -> 2
+        else -> 1 // 7 or default
+    }
 
     Column(
         modifier = Modifier
@@ -91,7 +95,6 @@ fun StatsReportsScreen(
                             shape = RoundedCornerShape(30.dp),
                         )
                         .clickable {
-                            selectedTab = index
                             val days = when (index) {
                                 0 -> 1
                                 1 -> 7
@@ -188,15 +191,6 @@ fun StatsReportsScreen(
                 Text("Export JSON")
             }
         }
-
-        exportStatus?.let {
-            Text(
-                text = it,
-                color = NetWatchSecondaryText,
-                fontSize = 12.sp,
-                lineHeight = 18.sp,
-            )
-        }
     }
 }
 
@@ -287,41 +281,58 @@ private fun DistributionCard(stats: TimeScopedStats) {
             Text("Network Distribution", color = NetWatchPrimaryText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .weight(pwifi)
-                        .height(72.dp)
-                        .background(NetWatchAccent, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text("Wi-Fi", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold)
+                if (stats.timeOnWifiMinutes > 0) {
+                    Box(
+                        modifier = Modifier
+                            .weight(max(0.01f, stats.timeOnWifiMinutes.toFloat()))
+                            .height(72.dp)
+                            .background(NetWatchAccent, RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.BottomCenter,
+                    ) {
+                        if (pwifi > 0.15f) Text("Wi-Fi", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .weight(p5g)
-                        .height(72.dp)
-                        .background(NetWatchAccent.copy(alpha = 0.7f), RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text("5G", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold)
+                if (stats.timeOn5gMinutes > 0) {
+                    Box(
+                        modifier = Modifier
+                            .weight(max(0.01f, stats.timeOn5gMinutes.toFloat()))
+                            .height(72.dp)
+                            .background(NetWatchAccent.copy(alpha = 0.7f), RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.BottomCenter,
+                    ) {
+                        if (p5g > 0.15f) Text("5G", modifier = Modifier.padding(8.dp), color = NetWatchBackground, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .weight(plte)
-                        .height(72.dp)
-                        .background(NetWatchAccent.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text("LTE", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold)
+                if (stats.timeOnLteMinutes > 0) {
+                    Box(
+                        modifier = Modifier
+                            .weight(max(0.01f, stats.timeOnLteMinutes.toFloat()))
+                            .height(72.dp)
+                            .background(NetWatchAccent.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.BottomCenter,
+                    ) {
+                        if (plte > 0.15f) Text("LTE", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .weight(plegacy)
-                        .height(72.dp)
-                        .background(NetWatchAccent.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text("Legacy", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold)
+                if (stats.timeOnLegacyMinutes > 0) {
+                    Box(
+                        modifier = Modifier
+                            .weight(max(0.01f, stats.timeOnLegacyMinutes.toFloat()))
+                            .height(72.dp)
+                            .background(NetWatchAccent.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.BottomCenter,
+                    ) {
+                        if (plegacy > 0.15f) Text("Legacy", modifier = Modifier.padding(8.dp), color = NetWatchPrimaryText, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
+                
+                if (totalMinutes <= 0L) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().height(72.dp).background(NetWatchSurface, RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No Data", color = NetWatchSecondaryText, fontSize = 14.sp)
+                    }
                 }
             }
 
